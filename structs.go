@@ -17,7 +17,7 @@ type person struct {
 }
 
 func showStructs() {
-	fmt.Println("Structs")
+	fmt.Println("\n--------Structs--------")
 
 	// // Updating Structs
 	// // opt 1
@@ -37,16 +37,23 @@ func showStructs() {
 	// var alex person
 	// alex.firstName = "Alex"
 	// alex.lastName = "Anderson"
-	alex.updateName("Alexander")
+
+	// updating structs
+	// &variable = Give me the memory address of the value this variable is pointing at.
+	alexPointer := &alex
+	alexPointer.updateName("Alexander")
 	alex.print()
 	//fmt.Println(alex)
 }
 
-func (p person) updateName(newFirstName string) {
-	p.firstName = newFirstName
+// *pointer = give me the value the memory address is pointing at
+func (pointerToPerson *person) updateName(newFirstName string) {
+	// *person = This is a type description, meaning we're working with a pointer to a person
+	//*pointerToPerson = This is an operator, it mneans we want to manipulate actual the value the pointer is referencing.
+	(*pointerToPerson).firstName = newFirstName
 }
 
 // receiver function on struct
 func (p person) print() {
-	fmt.Printf("%+v", p)
+	fmt.Printf("\n%+v", p)
 }
