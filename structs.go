@@ -7,6 +7,9 @@ type contactInfo struct {
 	zipCode int
 }
 
+// for the contact field, you don't have to specify a field name,
+// you can just enter contactInfo and it will assume it is a
+// field name of contactInfo with the contactInfo struct
 type person struct {
 	firstName string
 	lastName  string
@@ -34,7 +37,16 @@ func showStructs() {
 	// var alex person
 	// alex.firstName = "Alex"
 	// alex.lastName = "Anderson"
+	alex.updateName("Alexander")
+	alex.print()
+	//fmt.Println(alex)
+}
 
-	fmt.Println(alex)
-	fmt.Printf("%+v", alex)
+func (p person) updateName(newFirstName string) {
+	p.firstName = newFirstName
+}
+
+// receiver function on struct
+func (p person) print() {
+	fmt.Printf("%+v", p)
 }
