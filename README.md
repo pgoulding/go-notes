@@ -25,10 +25,10 @@ func printMap(c map[string]string) {
 }
 ```
 
-
 ## Reference Types
 
 ### Slices
+
 *Reference Type*
  | Arrays                   | Slices                                                     |
  | ------------------------ | ---------------------------------------------------------- |
@@ -45,6 +45,7 @@ A Slice initializes an Array, with three elements inside of it:
 When you create a slice it initalizes an Array, and a structure that records the length of the slice, the capacity of the slice, and a reference to the underlying array (pointer to the head).
 
 ### Maps
+
 *Reference Type*
 All keys and values must be same same type. Keys and their values can be different types, but all the Keys must be the same type as each other, same for the values.
 
@@ -129,37 +130,61 @@ Either way works, difference seems to be semantic, but speficity IS important as
 
 ## Value Types
 
-### Structs
-*Value Type*
-Similar to a JavaScript Object or a Python Dictionary. See [structs.go](./structs.go) for more info.
+### Structs (*Value Type*)
+
+Similar to a JavaScript Object or a Python Dictionary.
 
 ### Interfaces
+
+Interfaces are tough to understand, learning to read the standard library documentation is good place to start. Writing your own interfaces are tough and require experience. 
+
+
+#### Syntax to define interface
+
+```go
+// Interface name = bot
+type bot interface {
+    //         Argument Types (optional)
+    getGreeting(string, int) (string, error)
+    //    ^                         ^
+    // Function Name           Return Types
+}
+```
+
+- Interfaces are __not__ generic types, Go doesn't support these.
+- Interfaces are 'implicit', no need to declare that
+- Interfaces are a contract to help us manage types
+  - Not a built in test, Garbage in -> Garbage Out
+
+| Concrete Type | Interface Type |
+| ------------- | -------------- |
+|               |                |
 
 
 ### Go Routines
 
-
 ### Q & A
 
-_Q:_ What is a Pointer in Go?
-_A:_ A variable that holds the memory address of another variable.
+*Q:* What is a Pointer in Go?
+*A:* A variable that holds the memory address of another variable.
 
-_Q:_ How do yopu declare a pointer in Go?
-_A:_ Using the `*` operator followed by the type of variable it will point to. e.g `var p *int`
+*Q:* How do you declare a pointer in Go?
+*A:* Using the `*` operator followed by the type of variable it will point to. e.g `var p *int`
 
-_Q:_ How do you get the address of a pointer in Go?
-_A:_ Using the `&` operator. For example:
+*Q:* How do you get the address of a pointer in Go?
+*A:* Using the `&` operator. For example:
 
 ```go
 var x int = 10
 var p *int = &x
 ```
 
-_Q:_ Whenever you pass an integer, float, or string into a function what does Go do with that argument?
-_A:_ It creates a copy of each arguement and these copies are used inside of the function.
+*Q:* Whenever you pass an integer, float, or string into a function what does Go do with that argument?
+*A:* It creates a copy of each arguement and these copies are used inside of the function.
 
-_Q:_ What is the `&` operator used for?
-_A:_ Turning a value into a pointer
+*Q:* What is the `&` operator used for?
+*A:* Turning a value into a pointer
 
-_Q:_ WHen you see a `*` operator in front of a pointer , what will it turn the pointer into?
-_A:_ A Value.
+*Q:* When you see a `*` operator in front of a pointer , what will it turn the pointer into?
+*A:* A Value.
+
