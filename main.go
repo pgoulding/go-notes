@@ -6,5 +6,6 @@ func main() {
 	fmt.Println("\n-------- Main --------")
 	//showStructs()
 	//showMaps()
-	showInterfaces()
+	//showInterfaces()
+	http_resp_interface()
 }
