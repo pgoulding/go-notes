@@ -136,7 +136,7 @@ Similar to a JavaScript Object or a Python Dictionary.
 
 ### Interfaces
 
-Interfaces are tough to understand, learning to read the standard library documentation is good place to start. Writing your own interfaces are tough and require experience. 
+Interfaces are tough to understand, learning to read the standard library documentation is good place to start. Writing your own interface is hard and require experience. Interfaces are used as a contract to help us manage types.
 
 
 #### Syntax to define interface
@@ -188,3 +188,8 @@ var p *int = &x
 *Q:* When you see a `*` operator in front of a pointer , what will it turn the pointer into?
 *A:* A Value.
 
+*Q:* To say that a type satisfies an interface means that...
+*A:* The type implements all of the functions contains in the interface definition.
+
+*Q:* Types that implement the Reader interface are generally used to...
+*A:* Read information from an outside source into our application.
