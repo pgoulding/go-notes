@@ -7,5 +7,6 @@ func main() {
 	//showStructs()
 	//showMaps()
 	//showInterfaces()
-	http_resp_interface()
+	//http_resp_interface()
+	geoMain()
 }
