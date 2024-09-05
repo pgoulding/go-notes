@@ -2,9 +2,36 @@
 
 ## Variables
 
-Established by either explicitly naming type `var example = string "example"` or implicitly assuming type using **short variable declaration** `example:="example"`
+You can establish a variable by using the `var` keyword and explicitly naming type (`var example = string "example"`), implicitly assuming type using **short variable declaration** (`example:="example"`), or by **type inference** using either `=` or `:=` and the type is *inferred* for the value on the rightr hand side.
 
-There are two types of variables, **Value** and **Reference**, Value types need pointers to change them in a function, while Reference types don't need pointers to change.
+In go you can also have **same line declarations** where you establish multiple variables on the same line separated by a comma.
+
+```go
+    fruit, quantity := "apple", 45
+```
+
+Go has 25 [keywords](https://go.dev/ref/spec#Keywords) that can't be used as names for variables:
+
+|           |        |         |             |          |
+| --------- | ------ | ------- | ----------- | -------- |
+| break     | case   | chan    | const       | continue |
+| default   | defer  | else    | fallthrough | for      |
+| func      | go     | goto    | if          | import   |
+| interface | map    | package | range       | return   |
+| select    | struct | switch  | type        | var      |
+
+There are many types in the golang ecosystem and it can get confusing to know which ones to use. Unless you have a very good reason to, stick to the following types:
+
+- bool
+- string
+- int
+- uint
+- byte
+- rune
+- float64
+- complex128
+
+There are two types of variables, **Value** and **Reference**, Value types need pointers to change them in a function, while Reference types don't need pointers to change. Some Examples being:
 
 | Value Types | Reference Types |
 | ----------- | --------------- |
@@ -14,33 +41,40 @@ There are two types of variables, **Value** and **Reference**, Value types need 
 | bool        | pointers        |
 | structs     | functions       |
 
-Go has 25 keywords that can't be used as names for variables:
+### Type Sizes
+Ints, uints, floats and complex numbers all have type sizes.
 
-- break
-- case
-- chan
-- const
-- continue
-- default
-- defer
-- else
-- fallthrough
-- for
-- func
-- go
-- goto
-- if
-- import
-- interface
-- map
-- package
-- range
-- return
-- select
-- struct
-- switch
-- type
-- var
+The standard sizes that should be used unless you have a specific need are:
+
+int
+uint
+float64
+complex128
+
+| Whole Numbers | Positive Whole Numbers | Decimal Numbers | imaginary numbers |
+| ------------- | ---------------------- | --------------- | ----------------- |
+| int           | uint                   | float32         | complex64         |
+| int8          | uint8                  | float64         | complex128        |
+| int16         | uint16                 |                 |                   |
+| int32         | uint32                 |                 |                   |
+| int64         | uint64                 |                 |                   |
+|               | uintptr                |                 |                   |
+
+The standard sizes that should be used unless you have a specific need are:
+
+- int
+- uint
+- float64
+- complex128
+
+Constants aree declared like variables, but use the `const` keyword. They must be know at compile time, and usually declared with a static value, however they may be computed as long as that computation *happens at compile time*. Constants must also be of a simple data type, and cannot be of a complex type.
+
+| Allowed | Not Allowed |
+| ------- | ----------- |
+| int     | slice       |
+| string  | map         |
+| bool    | struct      |
+
 
 ## Loops
 
@@ -73,6 +107,25 @@ func printMap(c map[string]string) {
     }
 }
 ```
+
+## Logging to the terminal
+
+Go, like C and other langauges comes standard with a variety of tools to print to the terminal, especially useful for command lines tools and debugging. The most common being `fmt.Printf()`, which produces a formatted output from a list of expressions. It's firtst argument is format string that specifies how other arguments should be formatted. The format of each argument is determined by a consversion character and a letter following a perct sign. 
+
+`Printf` has over a dozen such conversions which Go programmers call *verbs*, [A full list can be found here.](https://pkg.go.dev/fmt)
+
+| Verb             | Definition                                                                         |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| `%d`             | decimal integer                                                                    |
+| `%x`, `%o`, `%b` | integer in hexadecimal, octal or binary                                            |
+| `%f`             | decimal point but no exponent, e.g. 123.456 *                                      |
+| `%g`             | float32, or complex64                       *                                      |
+| `%e`             | scientific notation, e.g. -1.234456e+78     *                                      |
+| `%t`             | Boolean: true or false                                                             |
+| `%c`             | Rune (unicode code point) [details](https://exercism.org/tracks/go/concepts/runes) |
+
+*The default precision for `%e`, `%f` and `%#g` is 6, for `%g` it is the smallest number of digits necessary to identify the value correctly. See the docs for more info.
+
 
 ## Reference Types
 
