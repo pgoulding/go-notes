@@ -10,5 +10,7 @@ func main() {
 	//http_resp_interface()
 	//geoMain()
 	// // you'll need to supply a file to the command line arguments to run this one.
-	textinput()
+	// textinput()
+	// dup1()
+
 }
