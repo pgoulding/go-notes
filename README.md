@@ -1,5 +1,29 @@
 # Go Notes
 
+Go Source code is stored in *.go* files. Their filenames consist of lower-case letters like `main.go` if the name consists of multiple parts, they are seperated by underscores (`_`) like `tcp_transport.go`. Filenames cannot contain spaces or any other speical characters.
+
+## Identifiers
+
+An *identifier* is a name assigned by the user to a program element like a *variable*, *function*, *template*, *struct*, etc... Nearly all things in Go have a name or *identifier*. Valid identifiers begin with a letter or underscore and are followed by 0 or more letters or unicode digits, can not start with a digit, have an [operator](#operators), or be a keyword. Go has 25 [keywords](https://go.dev/ref/spec#Keywords) and 36 [predeclared identifiers](https://go.dev/ref/spec#Predeclared_identifiers) that can't be used for names. You can also use an underscore (`_`) or as it's called in go a *blank identifier*, however its value is discarded and cannot be used in the code that follows, on use case for that being [loops](#loops).
+
+| Valid Identifiers | Invalid Identifiers |
+| ----------------- | ------------------- |
+| x56               | else                |
+| group1            | 1group              |
+| _group2           | group1+group2       |
+
+Go Keywords:
+
+|           |        |         |             |          |
+| --------- | ------ | ------- | ----------- | -------- |
+| break     | case   | chan    | const       | continue |
+| default   | defer  | else    | fallthrough | for      |
+| func      | go     | goto    | if          | import   |
+| interface | map    | package | range       | return   |
+| select    | struct | switch  | type        | var      |
+
+An identifier can be exported to permit access to it from another package by having the first character of the identifer be reporesented by an uppercase letter, and if the identifier si declared in the either the package block, field name, or method name. All other identifiers are not exported.
+
 ## Variables
 
 You can establish a variable by using the `var` keyword and explicitly naming type (`var example = string "example"`), implicitly assuming type using **short variable declaration** (`example:="example"`), or by **type inference** using either `=` or `:=` and the type is *inferred* for the value on the rightr hand side.
@@ -9,16 +33,6 @@ In go you can also have **same line declarations** where you establish multiple 
 ```go
     fruit, quantity := "apple", 45
 ```
-
-Go has 25 [keywords](https://go.dev/ref/spec#Keywords) that can't be used as names for variables:
-
-|           |        |         |             |          |
-| --------- | ------ | ------- | ----------- | -------- |
-| break     | case   | chan    | const       | continue |
-| default   | defer  | else    | fallthrough | for      |
-| func      | go     | goto    | if          | import   |
-| interface | map    | package | range       | return   |
-| select    | struct | switch  | type        | var      |
 
 There are many types in the golang ecosystem and it can get confusing to know which ones to use. Unless you have a very good reason to, stick to the following types:
 
@@ -40,39 +54,6 @@ There are two types of variables, **Value** and **Reference**, Value types need 
 | string      | channels        |
 | bool        | pointers        |
 | structs     | functions       |
-
-### Constants
-
-Constants in go can only be of type numbers, characters (runes), strings or booleans In go you can also declare a **constant** by using the `const` keyword with an identifier and an optional type specifier. The type specifier is optional because of implicit value from the compiler.
-
-```go
-    const identifier [type] = value
-    // for example
-    const pi float32 = 3.1415
-```
-
-## Operators
-
-A symbo that is used to perform logiccal or mathemtaical tasks is called an operator. Go provides thte following built in operators:
-
-- Arithmetic Operators
-- Logical Operators
-- Bitwise Opertaors
-
-### Arithmetic Operators
-
-The common binary operators `+`, `-`, `*`, and `/` thta exist for both integers and floats in Golang are:
-
-- Addition Operator `+`
-- Subtraction Operator `-`
-- DIvision Operator `/`
-- Modulus Operator `%`
-- Multiplication Operator `*`
-
-### Logical Operatos
-
-### Bitwise Operators
-
 
 ### Type Sizes
 
@@ -101,13 +82,71 @@ The standard sizes that should be used unless you have a specific need are:
 - float64
 - complex128
 
-Constants aree declared like variables, but use the `const` keyword. They must be know at compile time, and usually declared with a static value, however they may be computed as long as that computation *happens at compile time*. Constants must also be of a simple data type, and cannot be of a complex type.
+### Constants
+
+Constants in go can only be of type numbers, characters (runes), strings or booleans. Constants are declared like variables, but use the `const` keyword. In go you declare a **constant** by using the `const` keyword with an identifier and an optional type specifier. The type specifier is optional because of implicit value from the compiler. They must be know at compile time, and usually declared with a static value, however they may be computed as long as that computation *happens at compile time*. Constants must also be of a simple data type (string, boolean, numeric), and cannot be of a complex type.
+
+```go
+    const identifier [type] = value
+    // for example
+    const pi float32 = 3.1415
+```
 
 | Allowed | Not Allowed |
 | ------- | ----------- |
 | int     | slice       |
 | string  | map         |
 | bool    | struct      |
+
+## Operators
+
+A symbol that is used to perform logical or mathematical tasks is called an operator. Go provides thte following built in operators:
+
+- Arithmetic Operators
+- Logical Operators
+- Bitwise Opertaors
+
+### Arithmetic Operators
+
+The common binary operators `+`, `-`, `*`, and `/` that exist for both integers and floats in Golang are:
+
+- Addition Operator `+`
+- Subtraction Operator `-`
+- Division Operator `/`
+- Modulus Operator `%`
+- Multiplication Operator `*`
+
+### Logical Operators
+
+The following are Logical operators in Go:
+
+- Equality Operator `==`
+- Not-Equal Operator `!=`
+- Greater-than Operator `>`
+- Less-than Operator `<`
+- Greater-than or Equal to `>=`
+- Less-than or Equal to `<=`
+
+In addition to these Logical operators, Go has three boolean logical operators:
+
+- AND operator `&&`
+- OR operator `|`
+- NOT operator `!`
+
+### Bitwise Operators
+
+Following are some bitwise operators:
+
+- Bitwise AND operator `&`
+- Bitwise OR operator `|`
+- Bitwise XOR operator `^`
+- Bit CLEAR operator `&^`
+- Bitwise COMPLEMENT operator `^`
+
+There are other two major bitwise operators used for shifting:
+
+- Left shift operator `<<`
+- Right shift operator `>>`
 
 ## Conditionals
 
@@ -196,6 +235,14 @@ Go, like C and other langauges comes standard with a variety of tools to print t
 
 *The default precision for `%e`, `%f` and `%#g` is 6, for `%g` it is the smallest number of digits necessary to identify the value correctly. See the docs for more info.
 
+| Escape Characters | Description        |
+| ----------------- | ------------------ |
+| `\n`              | newline            |
+| `\r`              | carriage return    |
+| `\t`              | tab                |
+| `\u`, `\U`        | unicode characters |
+
+
 ## Reference Types
 
 ### Slices
@@ -245,11 +292,11 @@ Why would you use a Map over a struct?
 | Use to reperesnt a collection of related properties | Use to represent a "thing" with a lot of different properties |
 | Don't need to know all the keys at compile time     | You need to know all the different fields at compile time     |
 
-### Pointers
+## Pointers
 
 A variable that holds the memory address of another variable.
 
-#### Representative in Ram
+### Representative in Ram
 
 | Address | Value                       |
 | ------- | --------------------------- |
@@ -323,7 +370,7 @@ type bot interface {
 - Interfaces are a contract to help us manage types
   - Not a built in test, Garbage in -> Garbage Out
 
-Here's a table comparing concrete types and interface types in Go:
+Comparing concrete and interface types in Go:
 
 | **Concrete Type**                                                                                                      | **Interface Type**                                                                                                                                                         |
 | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
