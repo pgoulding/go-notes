@@ -41,7 +41,41 @@ There are two types of variables, **Value** and **Reference**, Value types need 
 | bool        | pointers        |
 | structs     | functions       |
 
+### Constants
+
+Constants in go can only be of type numbers, characters (runes), strings or booleans In go you can also declare a **constant** by using the `const` keyword with an identifier and an optional type specifier. The type specifier is optional because of implicit value from the compiler.
+
+```go
+    const identifier [type] = value
+    // for example
+    const pi float32 = 3.1415
+```
+
+## Operators
+
+A symbo that is used to perform logiccal or mathemtaical tasks is called an operator. Go provides thte following built in operators:
+
+- Arithmetic Operators
+- Logical Operators
+- Bitwise Opertaors
+
+### Arithmetic Operators
+
+The common binary operators `+`, `-`, `*`, and `/` thta exist for both integers and floats in Golang are:
+
+- Addition Operator `+`
+- Subtraction Operator `-`
+- DIvision Operator `/`
+- Modulus Operator `%`
+- Multiplication Operator `*`
+
+### Logical Operatos
+
+### Bitwise Operators
+
+
 ### Type Sizes
+
 Ints, uints, floats and complex numbers all have type sizes.
 
 The standard sizes that should be used unless you have a specific need are:
@@ -75,6 +109,41 @@ Constants aree declared like variables, but use the `const` keyword. They must b
 | string  | map         |
 | bool    | struct      |
 
+## Conditionals
+
+`if` statements don't use parenthesis around the condition in Go, and are for the most part very similar to what you would see in other lanaguages.
+
+```go
+    if CONDITION {
+        return "do something"
+    } else if ALTERNATE_CONDITION {
+        return "do something else"
+    } else {
+        return "default condition"
+    }
+```
+
+One feature of go conditionals is the **initial** statement that can be defined in the scope of the `if` body.
+
+For example, normally you would write a conditional like this:
+
+```go
+    validEmail := checkEmailSyntax(email)
+    if validEmail >1 {
+        fmt.Println("Email is Valid")
+    }
+```
+
+With Go you can use a bit of syntax sugar to shorten the code to something like this:
+
+```go
+    validEmail := checkEmailSyntax(email)
+    if validEmail := checkEmailSyntax(email); validEmail > 1 {
+        fmt.Println("Email is Valid")
+    }
+```
+
+This can help remove unnecesary varibales from the parent scope, and only have it apply inside the conditional.
 
 ## Loops
 
@@ -87,7 +156,7 @@ func printMap(c map[string]string) {
     }
 
     // Traditional 'while' loops
-    for condition {
+    for CONDITION {
 
     }
 
@@ -110,22 +179,22 @@ func printMap(c map[string]string) {
 
 ## Logging to the terminal
 
-Go, like C and other langauges comes standard with a variety of tools to print to the terminal, especially useful for command lines tools and debugging. The most common being `fmt.Printf()`, which produces a formatted output from a list of expressions. It's firtst argument is format string that specifies how other arguments should be formatted. The format of each argument is determined by a consversion character and a letter following a perct sign. 
+Go, like C and other langauges comes standard with a variety of tools to print to the terminal, especially useful for command lines tools and debugging. The most common being `fmt.Printf()`, which produces a formatted output from a list of expressions. It's firtst argument is format string that specifies how other arguments should be formatted. The format of each argument is determined by a consversion character and a letter following a perct sign.
 
-`Printf` has over a dozen such conversions which Go programmers call *verbs*, [A full list can be found here.](https://pkg.go.dev/fmt)
+`Printf` has over a dozen such conversions which Go programmers call *verbs*, [A full list can be found here.](https://pkg.go.dev/fmt#hdr-Printing)
 
-| Verb             | Definition                                                                         |
-| ---------------- | ---------------------------------------------------------------------------------- |
-| `%d`             | decimal integer                                                                    |
-| `%x`, `%o`, `%b` | integer in hexadecimal, octal or binary                                            |
-| `%f`             | decimal point but no exponent, e.g. 123.456 *                                      |
-| `%g`             | float32, or complex64                       *                                      |
-| `%e`             | scientific notation, e.g. -1.234456e+78     *                                      |
-| `%t`             | Boolean: true or false                                                             |
-| `%c`             | Rune (unicode code point) [details](https://exercism.org/tracks/go/concepts/runes) |
+| Verb             | Definition                                                                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `%v`             | The value in default format                                                                                                  |
+| `%d`             | Decimal integer                                                                                                              |
+| `%x`, `%o`, `%b` | Integer in hexadecimal, octal or binary                                                                                      |
+| `%f`             | Decimal point but no exponent, e.g. 123.456. Precision can be modified by addding a decimal point and number before the f  * |
+| `%g`             | Float32, or complex64                       *                                                                                |
+| `%e`             | Scientific notation, e.g. -1.234456e+78     *                                                                                |
+| `%t`             | Boolean: true or false                                                                                                       |
+| `%c`             | Rune (unicode code point) [details](https://exercism.org/tracks/go/concepts/runes)                                           |
 
 *The default precision for `%e`, `%f` and `%#g` is 6, for `%g` it is the smallest number of digits necessary to identify the value correctly. See the docs for more info.
-
 
 ## Reference Types
 
@@ -147,7 +216,7 @@ When you create a slice it initalizes an Array, and a structure that records the
 
 ### Maps
 
-A **map** holds a set of key/value pairs and provides constant-time (or O(1) in Big-O notation) operations to store,retrieve, or test for an item in the set. The key may be of any type whose values can be compared with _==_, strings being the most common example; the value may be of any type at all.
+A **map** holds a set of key/value pairs and provides constant-time (or O(1) in Big-O notation) operations to store,retrieve, or test for an item in the set. The key may be of any type whose values can be compared with *==*, strings being the most common example; the value may be of any type at all.
 
 All keys and values must be same same type. Keys and their values can be different types, but all the Keys must be the same type as each other, same for the values.
 
