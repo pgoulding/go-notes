@@ -226,14 +226,15 @@ Go, like C and other langauges comes standard with a variety of tools to print t
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `%v`             | The value in default format                                                                                                  |
 | `%d`             | Decimal integer                                                                                                              |
-| `%x`, `%o`, `%b` | Integer in hexadecimal, octal or binary                                                                                      |
+| `%s`             | String value, or the uninterpreted bytes of the string or slice                                                              |
+| `%t`             | Boolean: true or false                                                                                                       |
 | `%f`             | Decimal point but no exponent, e.g. 123.456. Precision can be modified by addding a decimal point and number before the f  * |
+| `%x`, `%o`, `%b` | Integer in hexadecimal, octal or binary                                                                                      |
 | `%g`             | Float32, or complex64                       *                                                                                |
 | `%e`             | Scientific notation, e.g. -1.234456e+78     *                                                                                |
-| `%t`             | Boolean: true or false                                                                                                       |
 | `%c`             | Rune (unicode code point) [details](https://exercism.org/tracks/go/concepts/runes)                                           |
 
-*The default precision for `%e`, `%f` and `%#g` is 6, for `%g` it is the smallest number of digits necessary to identify the value correctly. See the docs for more info.
+*The default precision for `%e`, `%f` and `%#g` is 6, for `%g` it is the smallest number of digits necessary to identify the value correctly. See the docs for more info. 
 
 | Escape Characters | Description        |
 | ----------------- | ------------------ |
@@ -242,6 +243,14 @@ Go, like C and other langauges comes standard with a variety of tools to print t
 | `\t`              | tab                |
 | `\u`, `\U`        | unicode characters |
 
+For compound objects, the elements are printed using these rules, recursively, laid out like this:
+
+| Compound Object   | Representation in terminal       |
+| ----------------- | -------------------------------- |
+| struct:           | {field0 field1 ...}              |
+| array, slice:     | [elem0 elem1 ...]                |
+| maps:             | map[key1:value1 key2:value2 ...] |
+| pointer to above: | &{}, &[], &map[]                 |
 
 ## Reference Types
 
@@ -294,7 +303,7 @@ Why would you use a Map over a struct?
 
 ## Pointers
 
-A variable that holds the memory address of another variable.
+
 
 ### Representative in Ram
 
