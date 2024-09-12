@@ -150,7 +150,15 @@ There are other two major bitwise operators used for shifting:
 
 ## Conditionals
 
-`if` statements don't use parenthesis around the condition in Go, and are for the most part very similar to what you would see in other lanaguages.
+- `if-else` construct
+- `switch-case` construct
+- `select` construct
+
+The `if` tests a conditional statement, that statement can be locgical or boolean. If the statement evaluates to **true**, the body of the statements between `{}` after the `if` is executed, and if it is false, these statements are ignored, and the statement after the `}` is executed.
+
+The `{}` braces are mandatory even when there is only one statement in the body. The `{` after the `if`, `else`, `else if` must be on the **same line**, and the `else`, `else if` keywords must be on **same line** as the closing `}` of the previous part of the structure.
+
+The parentheses `()` around the conditions are not needed. However, for complex conditions, they may be used to make the code clearer, and are for the most part very similar to what you would see in other lanaguages.
 
 ```go
     if CONDITION {
@@ -162,29 +170,42 @@ There are other two major bitwise operators used for shifting:
     }
 ```
 
-One feature of go conditionals is the **initial** statement that can be defined in the scope of the `if` body.
+It is almost always better to test for true or positive conditions, but it is possible to test for the reverse with `!` (not).
+
+```go
+    if !(condition) {
+
+    }
+```
+
+One feature of go conditionals is the **initialization statement** that can be defined in the scope of the `if` body.
 
 For example, normally you would write a conditional like this:
 
 ```go
-    validEmail := checkEmailSyntax(email)
-    if validEmail >1 {
-        fmt.Println("Email is Valid")
+    val:= 10
+    if val > max {
+        fmt.Println("Value is greater and maximum allowed")
     }
 ```
 
 With Go you can use a bit of syntax sugar to shorten the code to something like this:
 
 ```go
-    validEmail := checkEmailSyntax(email)
-    if validEmail := checkEmailSyntax(email); validEmail > 1 {
-        fmt.Println("Email is Valid")
+
+    if val:=10; val > max {
+        fmt.Println("Value is greater and maximum allowed")
     }
 ```
 
-This can help remove unnecesary varibales from the parent scope, and only have it apply inside the conditional.
+This can help remove unnecesary varibales from the parent scope, and only have it apply inside the conditional. Just remember that in this case `val` is only accessible in the scope of this conditional. If you try and acces it anywhere else in this program, the compiler will give you an error `undefined: val`
 
-## Loops
+
+## Iterative Loops
+
+- `for` keyword
+- `break` keyword
+- `continue` keyword
 
 ```go
 func printMap(c map[string]string) {
