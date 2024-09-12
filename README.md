@@ -244,35 +244,56 @@ There are a few rules you have to consider when writing a switch statement.
 - `break` keyword
 - `continue` keyword
 
+In Go the `for` statement exists to repeat a body of statements a number of times, one pass through the body is called an **iteration**. In every iteration a condition has to be checked to see whehter a loop should stop. If the exit condition becomes true, the loop is terminated. If we want to specifically chande the flow of execution we have two statements `break` and `continue`. A `break` statement always breaks out of the innermost structure in which it occurs. It can be used in any for-loop, and also a `switch` or `select` statement.
+
+There are two methods to control iteration:
+
+- Counter-Controlled
+- Condition-Controlled
+
+The simplest form is the **Counter-Controlled**: `for initialization; condition; modification { }`
+
 ```go
-func printMap(c map[string]string) {
-    // Traditional for loop
-    // for initialization; condition; post;
-    for i :=0; i < len(c); i++ {
+    for i :=0; i < 10; i++ {
 
     }
-
-    // Traditional 'while' loops
-    for CONDITION {
-
-    }
-
-    // infitinte loops
-    for {
-
-    }
-
-    // using the 'range' keyword to go through the length of the map or slice 
-    for index, value := range c {
-        // in each iteration of the loop, 'range' produces a pair of values, the index and the value of the element at that index.
-    }
-
-    // if you don't need the index in the loop youy can use the a blank identifier _ 
-    for _, value := range c {
-
-    }
-}
 ```
+
+The **Condition-Controlled** iteration contains no headed and is generally considered a `while-loop` in other langauges.
+
+```go
+    for condition {
+
+    }
+```
+
+You can also have an **infinite loop** by not giving an intialization/condition/modification. Always check that you have an exit condition to avoid an endless loops. Break only exits from the loop while return exits from the function in which the loop is coded.
+
+```go
+    for {
+        if(exitCondition) {
+            break
+        }
+    }
+```
+
+The `for range` iterator construct in Go can be useful in many contexts, for example looping over every item in a collection.
+
+```go
+    // using the 'range' keyword to go through the length of the map or slice 
+    c := ["yellow","green","blue","red"]
+    for idx, value := range c {
+        // in each iteration of the loop, 'range' produces a pair of values, the index and the value of the element at that index.
+        fmt.Printf("The color %s is at position %d", value, idx)
+    }
+    
+    // however if you don't need the index in the loop youy can use the a blank identifier _ 
+    for _, value := range c {
+        fmt.Printf("The color %s", value)
+    }
+```
+
+
 
 ## Testing in Go
 
