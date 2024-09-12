@@ -303,15 +303,24 @@ Why would you use a Map over a struct?
 
 ## Pointers
 
+Pointers store values in memory, and each memory block (or word) has an *address*, which is suually represnted as a hexadecimal number. Go has the *address-of operator* `&`, which when placed before a variable, gives us the memory address of that variable, that address is a special data type called a pointer. You cannot take the address of a literal or constant. The size of a pointer is 4 bytes on a 32 bit machine and 8 bytes on a 64 bit machine, regardless of the size of the value they point to. Using a pointer to refer to a value is called indirection. A newly declared pointer which has not been assigned to a variable has the *nil* value. A pointer variable is often abbreviated as *ptr*. 
 
+One advantage of pointers and where you might want to use them is that you can pass a refernce to a variable instead of passing a copy of that varibale itself. Pointers are cheap to pass (only 4 to 8 bytes), so when the program has to work with variables that occupy a lot of memory, many variables, or both, working with pointers can reduce meory usage and increase effiecncy. Pointer variables persist in memory as long as at least 1 pointer is pointing to them, so their lifetime is independent of the scope in which they are created. 
+
+On the other hand, because a pointer causes what it calls an indirection (a shift in the processing to another address), using them unnecesarily could cause a performance decrease. Pointers can point to other pointers and this nesting can go arbitrarily deep so that you can have multiple levels of indirection.
+
+While Go has the concept of pointers, it doesn't allow calculations with them (pointer arithmetic); as that often causes faulty memory access and fatal crashes in C and other low level languages, this feature makes Go *memory safe*.
 
 ### Representative in Ram
 
-| Address | Value                       |
-| ------- | --------------------------- |
-| 001     |                             |
-| 002     | person{firstName, lastName} |
-| 003     |                             |
+| Variable | Value                       | Memory Address |
+| -------- | --------------------------- | -------------- |
+| i1       | 5                           | 0x1000         |
+| intPtr   | 0x1000                      | 0x2000         |
+|          |                             | 0x0010         |
+|          |                             | 0x0020         |
+| alex     | person{firstName, lastName} | 0x0030         |
+
 
 Turn `address` into `value` with `*address`
 Turn `value` into `address` with `&value`
@@ -323,7 +332,7 @@ Turn `value` into `address` with `&value`
 ```go
 func (pointerToPerson *person) updateName(newFirstName string) {
     // *person = This is a type description, meaning we're working with a pointer to a person
-    //*pointerToPerson = This is an operator, it mneans we want to manipulate actual the value the pointer is referencing.
+    // *pointerToPerson = This is an operator, it mneans we want to manipulate actual the value the pointer is referencing.
     (*pointerToPerson).firstName = newFirstName
 }
 ```
@@ -350,7 +359,7 @@ As long as the receiver function you're passing it to has the `*` pointer:
 func (pointerToPerson *person) updateName(newFirstName string) 
 ```
 
-Either way works, difference seems to be semantic, but speficity IS important as a genreal principle.
+Either way works, difference seems to be semantic, but speficity IS important as a general principle.
 
 ## Value Types
 
@@ -381,17 +390,17 @@ type bot interface {
 
 Comparing concrete and interface types in Go:
 
-| **Concrete Type**                                                                                                      | **Interface Type**                                                                                                                                                         |
-| ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Definition:** A concrete type defines a specific data structure with fields and methods.                             | **Definition:** An interface type defines a set of method signatures without implementing them.                                                                            |
-| **Implementation:** Concrete types implement methods that define the behavior for that type.                           | **Implementation:** Interfaces do not implement methods but specify what methods a type must implement to satisfy the interface.                                           |
-| **Instantiation:** Can be directly instantiated using literals or constructors. Example: `var a MyStruct = MyStruct{}` | **Instantiation:** Cannot be directly instantiated; you assign a value that satisfies the interface. Example: `var b MyInterface = a` (where `a` implements `MyInterface`) |
-| **Memory Allocation:** The size and layout are known at compile time.                                                  | **Memory Allocation:** The size is not known at compile time; it is determined at runtime when a concrete type is assigned to it.                                          |
-| **Type Assertions:** Cannot use type assertions, as the type is known and fixed.                                       | **Type Assertions:** Type assertions can be used to extract the concrete type. Example: `if c, ok := b.(MyStruct); ok { ... }`                                             |
-| **Usage:** Typically used to define the actual structure of data and provide the concrete behavior.                    | **Usage:** Typically used to define a common behavior across different concrete types without knowing their exact structure.                                               |
-| **Method Sets:** Contains all the methods defined on the type.                                                         | **Method Sets:** Contains only the methods that match the interface's method signatures.                                                                                   |
-| **Example:** `type MyStruct struct { field1 int }`                                                                     | **Example:** `type MyInterface interface { Method1() }`                                                                                                                    |
-| **Common Use Cases:** Data models, structs, specific algorithms, and operations.                                       | **Common Use Cases:** Polymorphism, dependency injection, and abstraction over different types.                                                                            |
+|                        | **Concrete Type**                                                                                   | **Interface Type**                                                                                                                                      |
+| ---------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Definition:**        | A concrete type defines a specific data structure with fields and methods.                          | An interface type defines a set of method signatures without implementing them.                                                                         |
+| **Implementation:**    | Concrete types implement methods that define the behavior for that type.                            | Interfaces do not implement methods but specify what methods a type must implement to satisfy the interface.                                            |
+| **Instantiation:**     | Can be directly instantiated using literals or constructors. Example: `var a MyStruct = MyStruct{}` | Cannot be directly instantiated; you assign a value that satisfies the interface. Example: `var b MyInterface = a` (where `a` implements `MyInterface`) |
+| **Memory Allocation:** | The size and layout are known at compile time.                                                      | The size is not known at compile time; it is determined at runtime when a concrete type is assigned to it.                                              |
+| **Type Assertions:**   | Cannot use type assertions, as the type is known and fixed.                                         | Type assertions can be used to extract the concrete type. Example: `if c, ok := b.(MyStruct); ok { ... }`                                               |
+| **Usage:**             | Typically used to define the actual structure of data and provide the concrete behavior.            | Typically used to define a common behavior across different concrete types without knowing their exact structure.                                       |
+| **Method Sets:**       | Contains all the methods defined on the type.                                                       | Contains only the methods that match the interface's method signatures.                                                                                 |
+| **Example:**           | `type MyStruct struct { field1 int }`                                                               | `type MyInterface interface { Method1() }`                                                                                                              |
+| **Common Use Cases:**  | Data models, structs, specific algorithms, and operations.                                          | Polymorphism, dependency injection, and abstraction over different types.                                                                               |
 
 ### Go Channels & Routines
 
@@ -428,6 +437,9 @@ var x int = 10
 var p *int = &x
 ```
 
+*Q:* Can you create a pointer with no data in it?
+*A:* No, this is called a *nil* pointer and will cause the program to crash with the error: `panic: runtime error: invalid memory address or nil pointer dereference`
+
 *Q:* Whenever you pass an integer, float, or string into a function what does Go do with that argument?
 *A:* It creates a copy of each arguement and these copies are used inside of the function.
 
@@ -447,4 +459,4 @@ var p *int = &x
 *A:* A separate line of code execution that can be used to handle blocking code.
 
 *Q:* Whats the purpose of a channel (short answer)?
-*A:* Used for communicatin between go routines.
+*A:* Used for communication between go routines.
