@@ -154,6 +154,8 @@ There are other two major bitwise operators used for shifting:
 - `switch-case` construct
 - `select` construct
 
+### If-Else
+
 The `if` tests a conditional statement, that statement can be locgical or boolean. If the statement evaluates to **true**, the body of the statements between `{}` after the `if` is executed, and if it is false, these statements are ignored, and the statement after the `}` is executed.
 
 The `{}` braces are mandatory even when there is only one statement in the body. The `{` after the `if`, `else`, `else if` must be on the **same line**, and the `else`, `else if` keywords must be on **same line** as the closing `}` of the previous part of the structure.
@@ -200,6 +202,41 @@ With Go you can use a bit of syntax sugar to shorten the code to something like 
 
 This can help remove unnecesary varibales from the parent scope, and only have it apply inside the conditional. Just remember that in this case `val` is only accessible in the scope of this conditional. If you try and acces it anywhere else in this program, the compiler will give you an error `undefined: val`
 
+### Switch-Case
+
+The keyword `switch` can be used instead of long `if` statements that compare a variable to different values. The `switch` statement is a multiway brnach statement that provides a an easy way to transfer flow of execution to diferent parts of code based on the value. If you want to explicitly allow the code from **case 2** after **case 1** you'll need to use the `fallthrough` keyword at the end of the **case 1** branch.
+
+**Fallthrough** can be used in a hierarchy of cases where at each level something has to be done iin addition to the code already executed at higher classes, and a default action also has to be executed.
+
+There are a few rules you have to consider when writing a switch statement. 
+
+- Each `case` branch is exclusive
+- They are tried from first to last, so you should place the most probable cases first.
+- More than one value can be tried in a case statement
+- When `case` statements end with a `return` keyword, there also has to be a `return` statement after the end of `}` of the `switch`.
+- The optional `default` case is executed when no value is found to match the other cases. It acts like al `else` clause in `if-else` statements.
+- Any type that supports the equality comparison operator, such as ints, strings or pointers, can be used like an if statement.
+- A `switch` can also contain an initialization statement, like the `if` construct, by adding a semicolon at the end.
+
+```go
+    // example switch structure
+    switch exampleVar {
+        case val1: // these must be of the same type, or expressions evaluating to that type
+            // do something
+        case val2:
+            // do something else
+            // can be multiline
+        case val3, val4: // more than one value can be tested in a comma-separated list
+            // do something
+        case val5 > 10: fallthrough
+            // do something *if* 
+            // and then do the next thing
+        case val6:
+            // this is now also evaluated, even after val5 is executed as true.  
+        default: // optional
+            // Default catch all if no other statements evaluates true
+    }
+```
 
 ## Iterative Loops
 
@@ -207,35 +244,79 @@ This can help remove unnecesary varibales from the parent scope, and only have i
 - `break` keyword
 - `continue` keyword
 
+In Go the `for` statement exists to repeat a body of statements a number of times, one pass through the body is called an **iteration**. In every iteration a condition has to be checked to see whehter a loop should stop. If the exit condition becomes true, the loop is terminated. If we want to specifically chande the flow of execution we have two statements `break` and `continue`. A `break` statement always breaks out of the innermost structure in which it occurs. It can be used in any for-loop, and also a `switch` or `select` statement.
+
+There are two methods to control iteration:
+
+- Counter-Controlled
+- Condition-Controlled
+
+The simplest form is the **Counter-Controlled**: `for initialization; condition; modification { }`
+
 ```go
-func printMap(c map[string]string) {
-    // Traditional for loop
-    // for initialization; condition; post;
-    for i :=0; i < len(c); i++ {
+    for i :=0; i < 10; i++ {
 
     }
-
-    // Traditional 'while' loops
-    for CONDITION {
-
-    }
-
-    // infitinte loops
-    for {
-
-    }
-
-    // using the 'range' keyword to go through the length of the map or slice 
-    for index, value := range c {
-        // in each iteration of the loop, 'range' produces a pair of values, the index and the value of the element at that index.
-    }
-
-    // if you don't need the index in the loop youy can use the a blank identifier _ 
-    for _, value := range c {
-
-    }
-}
 ```
+
+The **Condition-Controlled** iteration contains no headed and is generally considered a `while-loop` in other langauges.
+
+```go
+    for condition {
+
+    }
+```
+
+You can also have an **infinite loop** by not giving an intialization/condition/modification. Always check that you have an exit condition to avoid an endless loops. Break only exits from the loop while return exits from the function in which the loop is coded.
+
+```go
+    for {
+        if(exitCondition) {
+            break
+        }
+    }
+```
+
+The `for range` iterator construct in Go can be useful in many contexts, for example looping over every item in a collection.
+
+```go
+    // using the 'range' keyword to go through the length of the map or slice 
+    c := ["yellow","green","blue","red"]
+    for idx, value := range c {
+        // in each iteration of the loop, 'range' produces a pair of values, the index and the value of the element at that index.
+        fmt.Printf("The color %s is at position %d", value, idx)
+    }
+    
+    // however if you don't need the index in the loop youy can use the a blank identifier _ 
+    for _, value := range c {
+        fmt.Printf("The color %s", value)
+    }
+```
+
+## Labels & goto
+
+A label is a sequence of characters that identifies a location within your code. A code line which starts with a `for`, `switch` or `select` statement can be preceded with a label `IDENTIFIER:`
+
+In go there is a keyword `goto` whcih has to be followed by a label name. `goto IDENTIFIER`
+
+## Testing in Go
+
+Some functions in Go are defined so that they return *two* results, on is the fvfalue, and the other is the status of the execution. For example the function would return both the value, and `true` in case of a succesful execution, or return the value (probably `nil`) and `false` in case of an unsuccessful execution. Other functions return an error-variable, where in case of a successful execution it will likely return `nil`, otherwise it contains the error informatiion. COmmonly this is called the **comma, ok** pattern.
+
+```go
+    var notAnInt string = "Blue"
+    
+    val, err := strconv.Atoi(notAnInt)
+
+    if err != nil { // if an error was found
+        fmt.Printf("Program stopping with error %v", err)
+        os.Exit(1) // exit the program with a error code other than 0
+    }
+```
+
+To implement your own error checking in Go, we can use the[ `errors` package](https://pkg.go.dev/errors). 
+
+[Example](./example_errors.go)
 
 ## Logging to the terminal
 

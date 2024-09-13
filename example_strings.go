@@ -30,7 +30,7 @@ func allTheStrings() {
 	fmt.Printf("\n%t\n\n", strings.Contains(str, "example"))
 	//strings.Contains(s, substr string) bool
 
-	fmt.Println("\n\nOther Examples:\n")
+	fmt.Println("\n\nOther Examples:")
 
 	// Index, returns the index of the first instance of str in s, or -1 if str is not present in s:
 	// strings.Index(s, str string) int
