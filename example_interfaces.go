@@ -13,7 +13,7 @@ type spanishBot struct {
 }
 
 func showInterfaces() {
-	fmt.Println("\n----- Interfaces ------\n")
+	fmt.Println("\n----- Interfaces ------")
 	eb := englishBot{}
 	sb := spanishBot{}
 	printGreeting(eb)
