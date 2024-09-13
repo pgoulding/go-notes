@@ -293,7 +293,11 @@ The `for range` iterator construct in Go can be useful in many contexts, for exa
     }
 ```
 
+## Labels & goto
 
+A label is a sequence of characters that identifies a location within your code. A code line which starts with a `for`, `switch` or `select` statement can be preceded with a label `IDENTIFIER:`
+
+In go there is a keyword `goto` whcih has to be followed by a label name. `goto IDENTIFIER`
 
 ## Testing in Go
 
