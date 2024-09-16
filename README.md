@@ -1,5 +1,8 @@
 # Go Notes
 
+
+This Repo is a place for my notes on Go(lang) and is based an accumulation of books, courses, projects, articles and threads.
+
 Go Source code is stored in *.go* files. Their filenames consist of lower-case letters like `main.go` if the name consists of multiple parts, they are seperated by underscores (`_`) like `tcp_transport.go`. Filenames cannot contain spaces or any other speical characters.
 
 ## Identifiers
@@ -208,7 +211,7 @@ The keyword `switch` can be used instead of long `if` statements that compare a 
 
 **Fallthrough** can be used in a hierarchy of cases where at each level something has to be done iin addition to the code already executed at higher classes, and a default action also has to be executed.
 
-There are a few rules you have to consider when writing a switch statement. 
+There are a few rules you have to consider when writing a switch statement.
 
 - Each `case` branch is exclusive
 - They are tried from first to last, so you should place the most probable cases first.
@@ -314,45 +317,10 @@ Some functions in Go are defined so that they return *two* results, on is the fv
     }
 ```
 
-To implement your own error checking in Go, we can use the[ `errors` package](https://pkg.go.dev/errors). 
+To implement your own error checking in Go, we can use the[`errors` package](https://pkg.go.dev/errors).
 
 [Example](./example_errors.go)
 
-## Logging to the terminal
-
-Go, like C and other langauges comes standard with a variety of tools to print to the terminal, especially useful for command lines tools and debugging. The most common being `fmt.Printf()`, which produces a formatted output from a list of expressions. It's firtst argument is format string that specifies how other arguments should be formatted. The format of each argument is determined by a consversion character and a letter following a perct sign.
-
-`Printf` has over a dozen such conversions which Go programmers call *verbs*, [A full list can be found here.](https://pkg.go.dev/fmt#hdr-Printing)
-
-| Verb             | Definition                                                                                                                   |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `%v`             | The value in default format                                                                                                  |
-| `%d`             | Decimal integer                                                                                                              |
-| `%s`             | String value, or the uninterpreted bytes of the string or slice                                                              |
-| `%t`             | Boolean: true or false                                                                                                       |
-| `%f`             | Decimal point but no exponent, e.g. 123.456. Precision can be modified by addding a decimal point and number before the f  * |
-| `%x`, `%o`, `%b` | Integer in hexadecimal, octal or binary                                                                                      |
-| `%g`             | Float32, or complex64                       *                                                                                |
-| `%e`             | Scientific notation, e.g. -1.234456e+78     *                                                                                |
-| `%c`             | Rune (unicode code point) [details](https://exercism.org/tracks/go/concepts/runes)                                           |
-
-*The default precision for `%e`, `%f` and `%#g` is 6, for `%g` it is the smallest number of digits necessary to identify the value correctly. See the docs for more info. 
-
-| Escape Characters | Description        |
-| ----------------- | ------------------ |
-| `\n`              | newline            |
-| `\r`              | carriage return    |
-| `\t`              | tab                |
-| `\u`, `\U`        | unicode characters |
-
-For compound objects, the elements are printed using these rules, recursively, laid out like this:
-
-| Compound Object   | Representation in terminal       |
-| ----------------- | -------------------------------- |
-| struct:           | {field0 field1 ...}              |
-| array, slice:     | [elem0 elem1 ...]                |
-| maps:             | map[key1:value1 key2:value2 ...] |
-| pointer to above: | &{}, &[], &map[]                 |
 
 ## Reference Types
 
@@ -405,9 +373,9 @@ Why would you use a Map over a struct?
 
 ## Pointers
 
-Pointers store values in memory, and each memory block (or word) has an *address*, which is suually represnted as a hexadecimal number. Go has the *address-of operator* `&`, which when placed before a variable, gives us the memory address of that variable, that address is a special data type called a pointer. You cannot take the address of a literal or constant. The size of a pointer is 4 bytes on a 32 bit machine and 8 bytes on a 64 bit machine, regardless of the size of the value they point to. Using a pointer to refer to a value is called indirection. A newly declared pointer which has not been assigned to a variable has the *nil* value. A pointer variable is often abbreviated as *ptr*. 
+Pointers store values in memory, and each memory block (or word) has an *address*, which is suually represnted as a hexadecimal number. Go has the *address-of operator* `&`, which when placed before a variable, gives us the memory address of that variable, that address is a special data type called a pointer. You cannot take the address of a literal or constant. The size of a pointer is 4 bytes on a 32 bit machine and 8 bytes on a 64 bit machine, regardless of the size of the value they point to. Using a pointer to refer to a value is called indirection. A newly declared pointer which has not been assigned to a variable has the *nil* value. A pointer variable is often abbreviated as *ptr*.
 
-One advantage of pointers and where you might want to use them is that you can pass a refernce to a variable instead of passing a copy of that varibale itself. Pointers are cheap to pass (only 4 to 8 bytes), so when the program has to work with variables that occupy a lot of memory, many variables, or both, working with pointers can reduce meory usage and increase effiecncy. Pointer variables persist in memory as long as at least 1 pointer is pointing to them, so their lifetime is independent of the scope in which they are created. 
+One advantage of pointers and where you might want to use them is that you can pass a refernce to a variable instead of passing a copy of that varibale itself. Pointers are cheap to pass (only 4 to 8 bytes), so when the program has to work with variables that occupy a lot of memory, many variables, or both, working with pointers can reduce meory usage and increase effiecncy. Pointer variables persist in memory as long as at least 1 pointer is pointing to them, so their lifetime is independent of the scope in which they are created.
 
 On the other hand, because a pointer causes what it calls an indirection (a shift in the processing to another address), using them unnecesarily could cause a performance decrease. Pointers can point to other pointers and this nesting can go arbitrarily deep so that you can have multiple levels of indirection.
 
@@ -422,7 +390,6 @@ While Go has the concept of pointers, it doesn't allow calculations with them (p
 |          |                             | 0x0010         |
 |          |                             | 0x0020         |
 | alex     | person{firstName, lastName} | 0x0030         |
-
 
 Turn `address` into `value` with `*address`
 Turn `value` into `address` with `&value`
@@ -522,6 +489,43 @@ Using Go Routines is typically applying concurrency, e.g. using a single core bu
 However Parallelism is also available in Go. If you have 4 cores, you could set `runtime.GOMAXPROCS(4)` ([docs](https://pkg.go.dev/runtime#GOMAXPROCS)) to make use of all 4 cores, by Default it is already the number of cores as reported by your system. So Go does use excplicit concurrency via Go Routines and implicit Parallelism, however its parallelism is abstracted away and is managed by the runtime itself.
 
 To learn more you can watch this [talk](https://go.dev/blog/waza-talk) from Rob Pike, the creator of Go.
+
+## Logging to the terminal
+
+Go, like C and other langauges comes standard with a variety of tools to print to the terminal, especially useful for command lines tools and debugging. The most common being `fmt.Printf()`, which produces a formatted output from a list of expressions. It's firtst argument is format string that specifies how other arguments should be formatted. The format of each argument is determined by a consversion character and a letter following a perct sign.
+
+`Printf` has over a dozen such conversions which Go programmers call *verbs*, [A full list can be found here.](https://pkg.go.dev/fmt#hdr-Printing)
+
+| Verb             | Definition                                                                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `%v`             | The value in default format                                                                                                  |
+| `%d`             | Decimal integer                                                                                                              |
+| `%s`             | String value, or the uninterpreted bytes of the string or slice                                                              |
+| `%t`             | Boolean: true or false                                                                                                       |
+| `%f`             | Decimal point but no exponent, e.g. 123.456. Precision can be modified by addding a decimal point and number before the f  * |
+| `%x`, `%o`, `%b` | Integer in hexadecimal, octal or binary                                                                                      |
+| `%g`             | Float32, or complex64                       *                                                                                |
+| `%e`             | Scientific notation, e.g. -1.234456e+78     *                                                                                |
+| `%c`             | Rune (unicode code point) [details](https://exercism.org/tracks/go/concepts/runes)                                           |
+
+*The default precision for `%e`, `%f` and `%#g` is 6, for `%g` it is the smallest number of digits necessary to identify the value correctly. See the docs for more info.
+
+| Escape Characters | Description        |
+| ----------------- | ------------------ |
+| `\n`              | newline            |
+| `\r`              | carriage return    |
+| `\t`              | tab                |
+| `\u`, `\U`        | unicode characters |
+
+For compound objects, the elements are printed using these rules, recursively, laid out like this:
+
+| Compound Object   | Representation in terminal       |
+| ----------------- | -------------------------------- |
+| struct:           | {field0 field1 ...}              |
+| array, slice:     | [elem0 elem1 ...]                |
+| maps:             | map[key1:value1 key2:value2 ...] |
+| pointer to above: | &{}, &[], &map[]                 |
+
 
 ### Q & A
 
