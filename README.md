@@ -302,9 +302,89 @@ A label is a sequence of characters that identifies a location within your code.
 
 In go there is a keyword `goto` whcih has to be followed by a label name. `goto IDENTIFIER`
 
+## Functions in Go
+
+Every program consists of several functions of the basic core functionality, the main prupose of which is to break a large problem into a smaller one, or the same task several times. When writing code you should always honor the [Don't Repeat Youyrself (DRY) principles][https://en.wikipedia.org/wiki/Don%27t_repeat_yourself], meaning the code which performs a certain task should only appear once in a program.
+
+A function ends when it has executed its last statement before the ending "`}`" or when it executes the `return` statement.
+
+There are three types of functions in Go:
+
+- Normal Functions with an Identifier
+- Anonymous AKA Lambda Functions
+- Methods
+
+### Parameters and Return Values
+
+Parameters can be **actual** paramaters or **formal** parameters, the difference between them being actual values are the values passed to the function when it is invoked, while the formal values are the varuiables that are defined by the function when it is called.
+
+```go
+func main(){
+    name := "Patrick"
+    printGreeting(name) // here name is being passed as the ACTUAL parameter.
+}
+
+
+func printGreeting(name string) { // Here name is the FORMAL parameter.
+    fmt.Println("Hello, ", name)
+} 
+```
+
+Returing values from a function is done by invoking the keyword `return`, the code following it will be executed. The default way to call a function in Go is to pass a variable as an argument to a function by value. A copy is made of tha variable and the data in it, and the function it is passed to works with that data while leaving the original data unmodified. This is called **pass by value** If you want the function to be able to change the value of the argument itself you have to pass the memory address of the variable the the `&` operator, this is called **pass by reference**; Effectively a [pointer](#pointers) is then passsed to the function. If the variable that is passed is a pointer then the pointer is copied, not the data that it is pointing to. However through the pointer, the function can change the original value. Passing a pointer is in almost all cases cheaper than making a copy of the object.
+
+Some functions just perform a task and do not return values. They perform what is called a **side-effect**, like printing to the console, sending an email, logging an error and so on...
+
+When returning a variable from a function you have to list is type in the same line after the parameters.
+
+```go
+func multiplyByTwo(paramVal int) int {
+    return paramVal *2
+}
+```
+
+Go also supports **Named Return Variables** where you can name the variables you want to return at the top of the function, and they are initialized as nil, or the default value for it's type.
+
+```go
+func main() {
+    fmt.Println(multiplyBy(5)) // returns 10
+}
+
+func multiplyBy(paramVal int) (retVal int) { // named variable retVal initialized in top level    
+    retVal = paramVal * 2
+    return
+}
+```
+
+If you have an unkown number of parameters you can pass them using [variadic functions](https://gobyexample.com/variadic-functions). In this case the last parameter of a function is followed by **...type**, this indicates that the function can deal with a variable number of paramaters of that type.
+
+```go
+func main(){
+    myVariadicFunction("Bob", "Bill", "Anne")
+}
+
+func myVariadicFunction(name ...string) {
+    for _, n := range name {
+        fmt.Println("Hello,", n)
+    }
+}
+
+// Prints:
+// Hello, Bob
+// Hello, Bill
+// Hello, Anne
+```
+
+Use of the `defer` keyword can allow us to postpone exeuction of a statement or a function until the end of the calling function. Defer then executes something when the closing function returns. When multiple `defer`'s are used in a function they execute in LIFO order. The defer can be used to guarantee that certain tasks are performed before we return from a function.
+
+Tasks that may need a `defer`:
+
+- Closing a file stream
+- Unlocking a locked resource (a mutex)
+- Closing a database connection
+
 ## Testing in Go
 
-Some functions in Go are defined so that they return *two* results, on is the fvfalue, and the other is the status of the execution. For example the function would return both the value, and `true` in case of a succesful execution, or return the value (probably `nil`) and `false` in case of an unsuccessful execution. Other functions return an error-variable, where in case of a successful execution it will likely return `nil`, otherwise it contains the error informatiion. COmmonly this is called the **comma, ok** pattern.
+Some functions in Go are defined so that they return *two* results, on is the falue, and the other is the status of the execution. For example the function would return both the value, and `true` in case of a succesful execution, or return the value (probably `nil`) and `false` in case of an unsuccessful execution. Other functions return an error-variable, where in case of a successful execution it will likely return `nil`, otherwise it contains the error informatiion. Commonly this is called the **comma, ok** pattern.
 
 ```go
     var notAnInt string = "Blue"
