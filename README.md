@@ -1,5 +1,7 @@
 # Go Notes
 
+This Repo is a place for my notes on Go(lang) and is based an accumulation of books, courses, projects, articles and threads.
+
 Go Source code is stored in *.go* files. Their filenames consist of lower-case letters like `main.go` if the name consists of multiple parts, they are seperated by underscores (`_`) like `tcp_transport.go`. Filenames cannot contain spaces or any other speical characters.
 
 ## Identifiers
@@ -208,7 +210,7 @@ The keyword `switch` can be used instead of long `if` statements that compare a 
 
 **Fallthrough** can be used in a hierarchy of cases where at each level something has to be done iin addition to the code already executed at higher classes, and a default action also has to be executed.
 
-There are a few rules you have to consider when writing a switch statement. 
+There are a few rules you have to consider when writing a switch statement.
 
 - Each `case` branch is exclusive
 - They are tried from first to last, so you should place the most probable cases first.
@@ -299,9 +301,144 @@ A label is a sequence of characters that identifies a location within your code.
 
 In go there is a keyword `goto` whcih has to be followed by a label name. `goto IDENTIFIER`
 
+## Functions in Go
+
+Every program consists of several functions of the basic core functionality, the main prupose of which is to break a large problem into a smaller one, or the same task several times. When writing code you should always honor the [Don't Repeat Youyrself (DRY) principles][https://en.wikipedia.org/wiki/Don%27t_repeat_yourself], meaning the code which performs a certain task should only appear once in a program.
+
+A function ends when it has executed its last statement before the ending "`}`" or when it executes the `return` statement.
+
+There are three types of functions in Go:
+
+- Normal Functions with an Identifier
+- Anonymous AKA Lambda Functions
+- Methods
+
+### Parameters and Return Values
+
+Parameters can be **actual** paramaters or **formal** parameters, the difference between them being actual values are the values passed to the function when it is invoked, while the formal values are the varuiables that are defined by the function when it is called.
+
+```go
+func main(){
+    name := "Patrick"
+    printGreeting(name) // here name is being passed as the ACTUAL parameter.
+}
+
+
+func printGreeting(name string) { // Here name is the FORMAL parameter.
+    fmt.Println("Hello, ", name)
+} 
+```
+
+Returing values from a function is done by invoking the keyword `return`, the code following it will be executed. The default way to call a function in Go is to pass a variable as an argument to a function by value. A copy is made of tha variable and the data in it, and the function it is passed to works with that data while leaving the original data unmodified. This is called **pass by value** If you want the function to be able to change the value of the argument itself you have to pass the memory address of the variable the the `&` operator, this is called **pass by reference**; Effectively a [pointer](#pointers) is then passsed to the function. If the variable that is passed is a pointer then the pointer is copied, not the data that it is pointing to. However through the pointer, the function can change the original value. Passing a pointer is in almost all cases cheaper than making a copy of the object.
+
+Some functions just perform a task and do not return values. They perform what is called a **side-effect**, like printing to the console, sending an email, logging an error and so on...
+
+When returning a variable from a function you have to list is type in the same line after the parameters.
+
+```go
+func multiplyByTwo(paramVal int) int {
+    return paramVal *2
+}
+```
+
+Go also supports **Named Return Variables** where you can name the variables you want to return at the top of the function, and they are initialized as nil, or the default value for it's type.
+
+```go
+func main() {
+    fmt.Println(multiplyBy(5)) // returns 10
+}
+
+func multiplyBy(paramVal int) (retVal int) { // named variable retVal initialized in top level    
+    retVal = paramVal * 2
+    return
+}
+```
+
+If you have an unkown number of parameters you can pass them using [variadic functions](https://gobyexample.com/variadic-functions). In this case the last parameter of a function is followed by **...type**, this indicates that the function can deal with a variable number of paramaters of that type.
+
+```go
+func main(){
+    myVariadicFunction("Bob", "Bill", "Anne")
+}
+
+func myVariadicFunction(name ...string) {
+    for _, n := range name {
+        fmt.Println("Hello,", n)
+    }
+}
+
+// Prints:
+// Hello, Bob
+// Hello, Bill
+// Hello, Anne
+```
+
+### Defer and Tracing
+
+Use of the `defer` keyword can allow us to postpone exeuction of a statement or a function until the end of the calling function. Defer then executes something when the closing function returns. When multiple `defer`'s are used in a function they execute in LIFO order. The defer can be used to guarantee that certain tasks are performed before we return from a function.
+
+Tasks that may need a `defer`:
+
+- Closing a file stream
+- Unlocking a locked resource (a mutex)
+- Closing a database connection
+
+A quick and dirty way to trace the execution of a program is using the defer keyword when entering and leaving certain functions. You can use this method for identify the sequence of function calls, ensure that resources are released properly in the correct order, and trace when entering and leaving each function.
+
+[example](./example_tracing.go)
+
+### Built-in functions
+
+| Function  | Description                                                                                                           | Syntax                                |
+| --------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `close`   | Used in channel communication                                                                                         |                                       |
+| `len`     | Gives the length of a nuymber of types (strings, arrays, slices, maps, channels).                                     |                                       |
+| `cap`     | Gives the **capacity** or maximum storage of a slice or map.                                                          |                                       |
+| `new`     | Used for allocating memory for value types and user defined types like structs.                                       |                                       |
+| `make`    | Used for built-in reference types (slices,maps,chanels).                                                              |                                       |
+| `copy`    | Copies slice elements of Type (*T*) from a source (*src*) to a destination (*dst*).                                   | `copy(dst, src, T[])`                 |
+| `append`  | Appends zero or more values to a slice (*s*)and returns the resulting slice with the same type (*[]T*) as *s*.        | `append(s[]T, x ...T) []T`            |
+| `panic`   | Used when the error condition is so severe and unrecoverable that the program cannot continue, and stops the program. | `panic(err)`                          |
+| `recover` | Allows the program to recover from a panic condition, stopping the termination and resuming normal execution.         | `recover()`                           |
+| `complex` | Used for manipulating complex numbers. [Details](https://pkg.go.dev/builtin#complex)                                  | `complex(r, i FloatType) ComplexType` |
+| `real`    | Used for manipulating complex numbers. [Details](https://pkg.go.dev/builtin#real)                                     | `real(c ComplexType) FloatType`       |
+| `imag`    | Used for manipulating complex numbers. [Details](https://pkg.go.dev/builtin#imag)                                     | `imag(c ComplexType) FloatType`       |
+
+### Other Functions
+
+- Recursive Functions
+- Higher Order Functions
+  - Fucntions can be used as values like any other variable value in Go, used as parameters in a function, or as a filter for other functions.
+  - [Higher Order Functions Example](./example_higher_order.go)
+- Closures
+- Functions as Return Values
+
+### Optimizing Programs
+
+Sometimes it's intersting to know how long a ceratin computation took to run, especially for testing or benchmarking solutions. The simple way to do this is to record the *start-time* before the calculation, and the *end-time* after it runs. The way to do this in Go can be by using the `Now` function from the `time` package in Go.
+
+```go
+package main
+import "fmt"
+import "time"
+
+func Calculation(){
+    for i := 0; i<10000; i++{
+        //do something
+    }
+}
+func main(){
+    start := time.Now()
+    Calculation()
+    end := time.Now()
+    delta := end.Sub(start)
+    fmt.Printf("Calculation took this amount of time: %s\n", delta)
+}
+```
+
 ## Testing in Go
 
-Some functions in Go are defined so that they return *two* results, on is the fvfalue, and the other is the status of the execution. For example the function would return both the value, and `true` in case of a succesful execution, or return the value (probably `nil`) and `false` in case of an unsuccessful execution. Other functions return an error-variable, where in case of a successful execution it will likely return `nil`, otherwise it contains the error informatiion. COmmonly this is called the **comma, ok** pattern.
+Some functions in Go are defined so that they return *two* results, on is the falue, and the other is the status of the execution. For example the function would return both the value, and `true` in case of a succesful execution, or return the value (probably `nil`) and `false` in case of an unsuccessful execution. Other functions return an error-variable, where in case of a successful execution it will likely return `nil`, otherwise it contains the error informatiion. Commonly this is called the **comma, ok** pattern.
 
 ```go
     var notAnInt string = "Blue"
@@ -314,45 +451,10 @@ Some functions in Go are defined so that they return *two* results, on is the fv
     }
 ```
 
-To implement your own error checking in Go, we can use the[ `errors` package](https://pkg.go.dev/errors). 
+To implement your own error checking in Go, we can use the[`errors` package](https://pkg.go.dev/errors).
 
 [Example](./example_errors.go)
 
-## Logging to the terminal
-
-Go, like C and other langauges comes standard with a variety of tools to print to the terminal, especially useful for command lines tools and debugging. The most common being `fmt.Printf()`, which produces a formatted output from a list of expressions. It's firtst argument is format string that specifies how other arguments should be formatted. The format of each argument is determined by a consversion character and a letter following a perct sign.
-
-`Printf` has over a dozen such conversions which Go programmers call *verbs*, [A full list can be found here.](https://pkg.go.dev/fmt#hdr-Printing)
-
-| Verb             | Definition                                                                                                                   |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `%v`             | The value in default format                                                                                                  |
-| `%d`             | Decimal integer                                                                                                              |
-| `%s`             | String value, or the uninterpreted bytes of the string or slice                                                              |
-| `%t`             | Boolean: true or false                                                                                                       |
-| `%f`             | Decimal point but no exponent, e.g. 123.456. Precision can be modified by addding a decimal point and number before the f  * |
-| `%x`, `%o`, `%b` | Integer in hexadecimal, octal or binary                                                                                      |
-| `%g`             | Float32, or complex64                       *                                                                                |
-| `%e`             | Scientific notation, e.g. -1.234456e+78     *                                                                                |
-| `%c`             | Rune (unicode code point) [details](https://exercism.org/tracks/go/concepts/runes)                                           |
-
-*The default precision for `%e`, `%f` and `%#g` is 6, for `%g` it is the smallest number of digits necessary to identify the value correctly. See the docs for more info. 
-
-| Escape Characters | Description        |
-| ----------------- | ------------------ |
-| `\n`              | newline            |
-| `\r`              | carriage return    |
-| `\t`              | tab                |
-| `\u`, `\U`        | unicode characters |
-
-For compound objects, the elements are printed using these rules, recursively, laid out like this:
-
-| Compound Object   | Representation in terminal       |
-| ----------------- | -------------------------------- |
-| struct:           | {field0 field1 ...}              |
-| array, slice:     | [elem0 elem1 ...]                |
-| maps:             | map[key1:value1 key2:value2 ...] |
-| pointer to above: | &{}, &[], &map[]                 |
 
 ## Reference Types
 
@@ -405,9 +507,9 @@ Why would you use a Map over a struct?
 
 ## Pointers
 
-Pointers store values in memory, and each memory block (or word) has an *address*, which is suually represnted as a hexadecimal number. Go has the *address-of operator* `&`, which when placed before a variable, gives us the memory address of that variable, that address is a special data type called a pointer. You cannot take the address of a literal or constant. The size of a pointer is 4 bytes on a 32 bit machine and 8 bytes on a 64 bit machine, regardless of the size of the value they point to. Using a pointer to refer to a value is called indirection. A newly declared pointer which has not been assigned to a variable has the *nil* value. A pointer variable is often abbreviated as *ptr*. 
+Pointers store values in memory, and each memory block (or word) has an *address*, which is suually represnted as a hexadecimal number. Go has the *address-of operator* `&`, which when placed before a variable, gives us the memory address of that variable, that address is a special data type called a pointer. You cannot take the address of a literal or constant. The size of a pointer is 4 bytes on a 32 bit machine and 8 bytes on a 64 bit machine, regardless of the size of the value they point to. Using a pointer to refer to a value is called indirection. A newly declared pointer which has not been assigned to a variable has the *nil* value. A pointer variable is often abbreviated as *ptr*.
 
-One advantage of pointers and where you might want to use them is that you can pass a refernce to a variable instead of passing a copy of that varibale itself. Pointers are cheap to pass (only 4 to 8 bytes), so when the program has to work with variables that occupy a lot of memory, many variables, or both, working with pointers can reduce meory usage and increase effiecncy. Pointer variables persist in memory as long as at least 1 pointer is pointing to them, so their lifetime is independent of the scope in which they are created. 
+One advantage of pointers and where you might want to use them is that you can pass a refernce to a variable instead of passing a copy of that varibale itself. Pointers are cheap to pass (only 4 to 8 bytes), so when the program has to work with variables that occupy a lot of memory, many variables, or both, working with pointers can reduce meory usage and increase effiecncy. Pointer variables persist in memory as long as at least 1 pointer is pointing to them, so their lifetime is independent of the scope in which they are created.
 
 On the other hand, because a pointer causes what it calls an indirection (a shift in the processing to another address), using them unnecesarily could cause a performance decrease. Pointers can point to other pointers and this nesting can go arbitrarily deep so that you can have multiple levels of indirection.
 
@@ -422,7 +524,6 @@ While Go has the concept of pointers, it doesn't allow calculations with them (p
 |          |                             | 0x0010         |
 |          |                             | 0x0020         |
 | alex     | person{firstName, lastName} | 0x0030         |
-
 
 Turn `address` into `value` with `*address`
 Turn `value` into `address` with `&value`
@@ -522,6 +623,43 @@ Using Go Routines is typically applying concurrency, e.g. using a single core bu
 However Parallelism is also available in Go. If you have 4 cores, you could set `runtime.GOMAXPROCS(4)` ([docs](https://pkg.go.dev/runtime#GOMAXPROCS)) to make use of all 4 cores, by Default it is already the number of cores as reported by your system. So Go does use excplicit concurrency via Go Routines and implicit Parallelism, however its parallelism is abstracted away and is managed by the runtime itself.
 
 To learn more you can watch this [talk](https://go.dev/blog/waza-talk) from Rob Pike, the creator of Go.
+
+## Logging to the terminal
+
+Go, like C and other langauges comes standard with a variety of tools to print to the terminal, especially useful for command lines tools and debugging. The most common being `fmt.Printf()`, which produces a formatted output from a list of expressions. It's firtst argument is format string that specifies how other arguments should be formatted. The format of each argument is determined by a consversion character and a letter following a perct sign.
+
+`Printf` has over a dozen such conversions which Go programmers call *verbs*, [A full list can be found here.](https://pkg.go.dev/fmt#hdr-Printing)
+
+| Verb             | Definition                                                                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `%v`             | The value in default format                                                                                                  |
+| `%d`             | Decimal integer                                                                                                              |
+| `%s`             | String value, or the uninterpreted bytes of the string or slice                                                              |
+| `%t`             | Boolean: true or false                                                                                                       |
+| `%f`             | Decimal point but no exponent, e.g. 123.456. Precision can be modified by addding a decimal point and number before the f  * |
+| `%x`, `%o`, `%b` | Integer in hexadecimal, octal or binary                                                                                      |
+| `%g`             | Float32, or complex64                       *                                                                                |
+| `%e`             | Scientific notation, e.g. -1.234456e+78     *                                                                                |
+| `%c`             | Rune (unicode code point) [details](https://exercism.org/tracks/go/concepts/runes)                                           |
+
+*The default precision for `%e`, `%f` and `%#g` is 6, for `%g` it is the smallest number of digits necessary to identify the value correctly. See the docs for more info.
+
+| Escape Characters | Description        |
+| ----------------- | ------------------ |
+| `\n`              | newline            |
+| `\r`              | carriage return    |
+| `\t`              | tab                |
+| `\u`, `\U`        | unicode characters |
+
+For compound objects, the elements are printed using these rules, recursively, laid out like this:
+
+| Compound Object   | Representation in terminal       |
+| ----------------- | -------------------------------- |
+| struct:           | {field0 field1 ...}              |
+| array, slice:     | [elem0 elem1 ...]                |
+| maps:             | map[key1:value1 key2:value2 ...] |
+| pointer to above: | &{}, &[], &map[]                 |
+
 
 ### Q & A
 
