@@ -1,6 +1,5 @@
 # Go Notes
 
-
 This Repo is a place for my notes on Go(lang) and is based an accumulation of books, courses, projects, articles and threads.
 
 Go Source code is stored in *.go* files. Their filenames consist of lower-case letters like `main.go` if the name consists of multiple parts, they are seperated by underscores (`_`) like `tcp_transport.go`. Filenames cannot contain spaces or any other speical characters.
@@ -374,6 +373,8 @@ func myVariadicFunction(name ...string) {
 // Hello, Anne
 ```
 
+### Defer and Tracing
+
 Use of the `defer` keyword can allow us to postpone exeuction of a statement or a function until the end of the calling function. Defer then executes something when the closing function returns. When multiple `defer`'s are used in a function they execute in LIFO order. The defer can be used to guarantee that certain tasks are performed before we return from a function.
 
 Tasks that may need a `defer`:
@@ -381,6 +382,59 @@ Tasks that may need a `defer`:
 - Closing a file stream
 - Unlocking a locked resource (a mutex)
 - Closing a database connection
+
+A quick and dirty way to trace the execution of a program is using the defer keyword when entering and leaving certain functions. You can use this method for identify the sequence of function calls, ensure that resources are released properly in the correct order, and trace when entering and leaving each function.
+
+[example](./example_tracing.go)
+
+### Built-in functions
+
+| Function  | Description                                                                                                           | Syntax                                |
+| --------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `close`   | Used in channel communication                                                                                         |                                       |
+| `len`     | Gives the length of a nuymber of types (strings, arrays, slices, maps, channels).                                     |                                       |
+| `cap`     | Gives the **capacity** or maximum storage of a slice or map.                                                          |                                       |
+| `new`     | Used for allocating memory for value types and user defined types like structs.                                       |                                       |
+| `make`    | Used for built-in reference types (slices,maps,chanels).                                                              |                                       |
+| `copy`    | Copies slice elements of Type (*T*) from a source (*src*) to a destination (*dst*).                                   | `copy(dst, src, T[])`                 |
+| `append`  | Appends zero or more values to a slice (*s*)and returns the resulting slice with the same type (*[]T*) as *s*.        | `append(s[]T, x ...T) []T`            |
+| `panic`   | Used when the error condition is so severe and unrecoverable that the program cannot continue, and stops the program. | `panic(err)`                          |
+| `recover` | Allows the program to recover from a panic condition, stopping the termination and resuming normal execution.         | `recover()`                           |
+| `complex` | Used for manipulating complex numbers. [Details](https://pkg.go.dev/builtin#complex)                                  | `complex(r, i FloatType) ComplexType` |
+| `real`    | Used for manipulating complex numbers. [Details](https://pkg.go.dev/builtin#real)                                     | `real(c ComplexType) FloatType`       |
+| `imag`    | Used for manipulating complex numbers. [Details](https://pkg.go.dev/builtin#imag)                                     | `imag(c ComplexType) FloatType`       |
+
+### Other Functions
+
+- Recursive Functions
+- Higher Order Functions
+  - Fucntions can be used as values like any other variable value in Go, used as parameters in a function, or as a filter for other functions.
+  - [Higher Order Functions Example](./example_higher_order.go)
+- Closures
+- Functions as Return Values
+
+### Optimizing Programs
+
+Sometimes it's intersting to know how long a ceratin computation took to run, especially for testing or benchmarking solutions. The simple way to do this is to record the *start-time* before the calculation, and the *end-time* after it runs. The way to do this in Go can be by using the `Now` function from the `time` package in Go.
+
+```go
+package main
+import "fmt"
+import "time"
+
+func Calculation(){
+    for i := 0; i<10000; i++{
+        //do something
+    }
+}
+func main(){
+    start := time.Now()
+    Calculation()
+    end := time.Now()
+    delta := end.Sub(start)
+    fmt.Printf("Calculation took this amount of time: %s\n", delta)
+}
+```
 
 ## Testing in Go
 
