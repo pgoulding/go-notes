@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// aliasing a type
 type flt func(int) bool
 
 func isOdd(n int) bool {
