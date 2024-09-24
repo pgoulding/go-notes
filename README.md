@@ -458,21 +458,39 @@ To implement your own error checking in Go, we can use the[`errors` package](htt
 
 ## Reference Types
 
-### Slices
+### Slices (*reference type*)
 
- | Arrays                   | Slices                                                     |
- | ------------------------ | ---------------------------------------------------------- |
- | Primitive Data Structure | Dynamic Data Structure consistitng of a slice and an Array |
- | Can't be resized         | Can Grow and Shrink                                        |
- | Rarely used directly     | Used 99% of the time for lists of elements                 |
+A slice is a reference to a contiguous segment of an Array, so a slice is a reference type (like a list type in Python). This section can be the entire array, or a subset of the item indicated by a start and an end index (the item at the end index is not included in the slice. Slices provide a dynamic window to the underlying array. Slices are indexable and have length given by the `len()` function. The slice-index of a given item can be less than the index of the same element in the underlying array. Unlike an array, the length of the slice can change during the execution of the code. The built it capacity (`cap()`) function gives the max length the slice can become. It is the length of the slice + the length of the array beyond the slice. If `s` is a slice, **cap** is the size of the array from `s[0]` to the end of the array. A slices length can never exceed its capacity. Multiple slices can share data if they represent pieces of the same array, but multiple arrays can never share data. Distinct Arrays always represent distinct storage. Because slices are merely *references*, they don't use up additional memory and are more efficient to use than arrays in Go. When you create a slice it initalizes an Array, and a structure that records the length of the slice, the capacity of the slice, and a reference to the underlying array (pointer to the head). If you have a function that must operate on an array, you always want to declare the formal parameter to be a slice. When you call the function, slice the array to create a slice reference and pass that. Since slices are a refernce type you can use the keyword function `make()` to define a new slice. The `make()` function takes two parameters, the type to be created, and the number of items in the slice, with an optional third argument for the **capacity**. Example being `var slice1 []type = make([]type, len)` or shorthand as `slice1 := make([]T, len)` where **T** is the type of variable used inside, and **len** is the initial length of the slice. 
+
+
+The format of declarations is `var identifier []type`.
+
+E.g.:
+
+```go
+    // A slice that has not yet been initialized is set to nil by default and has length 0.
+    var slice1 []type
+
+    var slice2 []type = arr1[start:end]
+    
+    // Shorthand for specifying a slice that includes all elements of arr1 from the first to the last
+    var slice3 []type = arr1[:]
+```
 
 A Slice initializes an Array, with three elements inside of it:
 
-- the Pointer to the head
-- the capacity
-- and the length
+- the Pointer to the head (underlying array)
+- the capacity of the slice
+- the length of the slice
 
-When you create a slice it initalizes an Array, and a structure that records the length of the slice, the capacity of the slice, and a reference to the underlying array (pointer to the head).
+ | Arrays                    | Slices                                                     |
+ | ------------------------- | ---------------------------------------------------------- |
+ | Primitive Data Structure  | Dynamic Data Structure consistitng of a slice and an Array |
+ | Can't be resized          | Can Grow and Shrink                                        |
+ | Rarely used directly      | Used 99% of the time for lists of elements                 |
+ | Building blocks of Slices | Dynamic window of the underlying array                     |
+
+
 
 ### Maps
 
@@ -528,9 +546,9 @@ While Go has the concept of pointers, it doesn't allow calculations with them (p
 Turn `address` into `value` with `*address`
 Turn `value` into `address` with `&value`
 
-&variable = Give me the memory address of the value this variable is pointing at.
+**&variable** = Give me the memory address of the value this variable is pointing at.
 
-*pointer = give me the value the memory address is pointing at
+**\*pointer** = give me the value the memory address is pointing at
 
 ```go
 func (pointerToPerson *person) updateName(newFirstName string) {
@@ -584,7 +602,7 @@ Since Arrays a a **value type** you can also use the `new()` keyword to declare 
 var arr2 = new([5]int)
 ```
 
-The difference between them being `new(T)` allocates zeroed storage for a new item of type T, and returns to it's address. THerefore it returns a pointer to the type T. SO `arr1` is of *type \[5]int* while arr2 is of type **\[5]int**. So when you assign an array to another array a distinct copy in memory is made. If you want to change both arrays in memory you would have to use `arr3:=&arr1` *(address-of operator)* so it would always  be **pointing** to the same address in memory and changes will reflect in both. Passing by value creates a copy of the array, ensuring the original array remains unchanged. In contrast, passing by reference (using a pointer) allows the called function to modify the original array.
+The difference between them being `new(T)` allocates zeroed storage for a new item of type T, and returns to it's address. THerefore it returns a pointer to the type T. SO `arr1` is of **type \*[5]int** while arr2 is of type **[5]int**. So when you assign an array to another array a distinct copy in memory is made. If you want to change both arrays in memory you would have to use `arr3:=&arr1` *(remember & as the address-of operator)* so it would always  be **pointing** to the same address in memory and changes will reflect in both. Passing by value creates a copy of the array, ensuring the original array remains unchanged. In contrast, passing by reference (using a pointer) allows the called function to modify the original array.
 
 Note: Assigning a value to an array-item at index *i* is done with `arr[i] = value`
 
@@ -601,7 +619,8 @@ var arr = [10]int{ 1, 2, 3 }
 // Using the […] notation, for example:
 
 var arrLazy = [...]int{5, 6, 7, 8, 22}
-// ... indicates the compiler has to count the number of items to obtain the length of the array. However, [...]int is not a type, so this is illegal:
+// ... indicates the compiler has to count the number of items to obtain the length of the array. 
+// However, [...]int is not a type, so this is illegal:
 
 var arrLazy [...]int = [...]int{5, 6, 7, 8, 22}
 // If the ... is omitted then a slice is created.
@@ -617,10 +636,6 @@ Two ways to prevent this are:
 - Passing a pointer to the array
 - Using a slice of the array
 
-
-### Slices (*reference type*)
-
-A slice is a reference to a contiguos segment of an array 
 
 ### Structs (*Value Type*)
 
@@ -667,19 +682,6 @@ Go rountines are initialized by using the `go` keyword before a function call.
 
 By default Go runs on only one CPU core.
 
-#### Concurrency is NOT Parallelism
-
-Concurrency: Dealing with a lot of things at once.
-Parallelism: Doing a lot of things at once.
-
-Concurrency is using single core efficiently (sequentially, no downtime as much as possible), while Parallelism is using multiple cores at once.
-
-Using Go Routines is typically applying concurrency, e.g. using a single core but using it efficiently.
-
-However Parallelism is also available in Go. If you have 4 cores, you could set `runtime.GOMAXPROCS(4)` ([docs](https://pkg.go.dev/runtime#GOMAXPROCS)) to make use of all 4 cores, by Default it is already the number of cores as reported by your system. So Go does use excplicit concurrency via Go Routines and implicit Parallelism, however its parallelism is abstracted away and is managed by the runtime itself.
-
-To learn more you can watch this [talk](https://go.dev/blog/waza-talk) from Rob Pike, the creator of Go.
-
 ## Logging to the terminal
 
 Go, like C and other langauges comes standard with a variety of tools to print to the terminal, especially useful for command lines tools and debugging. The most common being `fmt.Printf()`, which produces a formatted output from a list of expressions. It's firtst argument is format string that specifies how other arguments should be formatted. The format of each argument is determined by a consversion character and a letter following a perct sign.
@@ -716,9 +718,31 @@ For compound objects, the elements are printed using these rules, recursively, l
 | maps:             | map[key1:value1 key2:value2 ...] |
 | pointer to above: | &{}, &[], &map[]                 |
 
-## Data Structures in Go
+### Difference between new() and make()
 
+This is often confusing at first sight: both allocate memory on the heap, but they do different things and apply to different types.
 
+#### new(T)
+
+The function `new(T)` allocates zeroed storage for a new item of **type T** and returns its address as a value of **type \*T**. It applies to value types like arrays and structs, and it is equivalent to **&T{ }**
+
+#### make(T)
+
+The function `make(T)` returns an initialized value of **type T**. It applies only to the 3 built-in reference types: slices, maps, and channels.
+In other words, new allocates and make initializes.
+
+#### Concurrency is NOT Parallelism
+
+**Concurrency:** Dealing with a lot of things at once.
+**Parallelism:** Doing a lot of things at once.
+
+Concurrency is using single core efficiently (sequentially, no downtime as much as possible), while Parallelism is using multiple cores at once.
+
+Using Go Routines is typically applying concurrency, e.g. using a single core but using it efficiently.
+
+However Parallelism is also available in Go. If you have 4 cores, you could set `runtime.GOMAXPROCS(4)` ([docs](https://pkg.go.dev/runtime#GOMAXPROCS)) to make use of all 4 cores, by Default it is already the number of cores as reported by your system. So Go does use excplicit concurrency via Go Routines and implicit Parallelism, however its parallelism is abstracted away and is managed by the runtime itself.
+
+To learn more you can watch this [talk](https://go.dev/blog/waza-talk) from Rob Pike, the creator of Go.
 
 ### Q & A
 
@@ -737,6 +761,7 @@ var p *int = &x
 ```
 
 *Q:* Can you create a pointer with no data in it?
+
 *A:* No, this is called a *nil* pointer and will cause the program to crash with the error: `panic: runtime error: invalid memory address or nil pointer dereference`
 
 *Q:* Whenever you pass an integer, float, or string into a function what does Go do with that argument?
