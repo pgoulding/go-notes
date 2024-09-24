@@ -566,6 +566,62 @@ Either way works, difference seems to be semantic, but speficity IS important as
 
 ## Value Types
 
+### Arrays(*Value Type*)
+
+Data structures that contain a number of items and are called **collections** in Go, some examples being Arrays (slices) and Maps. The `Array` type is indicated by the `[]` (square brackets), **numbered** and of **fixed length** sequence of data items (elements) of the same type. This type can contain primitve types like int's or strings, or self defined types. The length must be a constant expression that must evaluate to a non-negative integer value. The number of items, also called then **length** is fixed and must bew declared when initializing the array at compile time. Arrays are mutable, which means they can be changed. Only valid indexes can be used, when using an index greater than or equal than `len(arr1)`, you will get the error message at compile of `index out of bounds`, and when trying to run will give you ther error message of `index out of range`. A run time error means the program will crash and give you a certain message. In Go terminolofy this is called a **panic**. Because of the index, the way to loop over an array is to use the [**for-construct**](#iterative-loops)
+
+The format of the declaration is `var identifier [len]type` 
+
+E.g.
+
+```go
+var arr1 [5]int
+```
+
+Since Arrays a a **value type** you can also use the `new()` keyword to declare them.
+
+```go
+var arr2 = new([5]int)
+```
+
+The difference between them being `new(T)` allocates zeroed storage for a new item of type T, and returns to it's address. THerefore it returns a pointer to the type T. SO `arr1` is of *type \[5]int* while arr2 is of type **\[5]int**. So when you assign an array to another array a distinct copy in memory is made. If you want to change both arrays in memory you would have to use `arr3:=&arr1` *(address-of operator)* so it would always  be **pointing** to the same address in memory and changes will reflect in both. Passing by value creates a copy of the array, ensuring the original array remains unchanged. In contrast, passing by reference (using a pointer) allows the called function to modify the original array.
+
+Note: Assigning a value to an array-item at index *i* is done with `arr[i] = value`
+
+When some or all the values are known beforehand you can use something called **array literals** or **constructors**.
+
+```go
+// Specify explicitly the size n of the array with [n].
+var arrAge = [5]int{18, 20, 15, 22, 16}
+
+// another example being
+var arr = [10]int{ 1, 2, 3 }
+// This is an array of 10 elements with the 1st three different from 0.
+
+// Using the […] notation, for example:
+
+var arrLazy = [...]int{5, 6, 7, 8, 22}
+// ... indicates the compiler has to count the number of items to obtain the length of the array. However, [...]int is not a type, so this is illegal:
+
+var arrLazy [...]int = [...]int{5, 6, 7, 8, 22}
+// If the ... is omitted then a slice is created.
+
+// The index: value syntax can be followed. For example:
+var arrKeyValue = [5]string{3: "Chris", 4: "Ron"}
+```
+
+Note: Passing an array to a function can eat up a lot of memory because arrays are copied when passing.
+
+Two ways to prevent this are:
+
+- Passing a pointer to the array
+- Using a slice of the array
+
+
+### Slices (*reference type*)
+
+A slice is a reference to a contiguos segment of an array 
+
 ### Structs (*Value Type*)
 
 Similar to a JavaScript Object or a Python Dictionary.
@@ -659,6 +715,9 @@ For compound objects, the elements are printed using these rules, recursively, l
 | array, slice:     | [elem0 elem1 ...]                |
 | maps:             | map[key1:value1 key2:value2 ...] |
 | pointer to above: | &{}, &[], &map[]                 |
+
+## Data Structures in Go
+
 
 
 ### Q & A
