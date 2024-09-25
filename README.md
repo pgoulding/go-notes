@@ -279,7 +279,15 @@ You can also have an **infinite loop** by not giving an intialization/condition/
     }
 ```
 
-The `for range` iterator construct in Go can be useful in many contexts, for example looping over every item in a collection.
+### For-Range Construct
+
+```go
+    for idx, value := range exampleSlice {
+        ...
+    }
+```
+
+The `for range` iterator construct in Go can be useful in many contexts, for example looping over every item in a collection. This construct can be applied to arrays and slices. The first value aftere the `for` is the **index** of the array or slice, and the second is the **value** at that index. These are local variables that are only know in the body of the for statement, so `value` is a copy of the slice at **index** `idx`. You can optionally discard the index by assigning it to a **blank identifer** (`_`).
 
 ```go
     // using the 'range' keyword to go through the length of the map or slice 
@@ -303,7 +311,7 @@ In go there is a keyword `goto` whcih has to be followed by a label name. `goto 
 
 ## Functions in Go
 
-Every program consists of several functions of the basic core functionality, the main prupose of which is to break a large problem into a smaller one, or the same task several times. When writing code you should always honor the [Don't Repeat Youyrself (DRY) principles][https://en.wikipedia.org/wiki/Don%27t_repeat_yourself], meaning the code which performs a certain task should only appear once in a program.
+Every program consists of several functions of the basic core functionality, the main prupose of which is to break a large problem into a smaller one, or the same task several times. When writing code you should always honor the [Don't Repeat Yourself 'DRY' principles][https://en.wikipedia.org/wiki/Don%27t_repeat_yourself], meaning the code which performs a certain task should only appear once in a program.
 
 A function ends when it has executed its last statement before the ending "`}`" or when it executes the `return` statement.
 
@@ -455,13 +463,11 @@ To implement your own error checking in Go, we can use the[`errors` package](htt
 
 [Example](./example_errors.go)
 
-
 ## Reference Types
 
 ### Slices (*reference type*)
 
-A slice is a reference to a contiguous segment of an Array, so a slice is a reference type (like a list type in Python). This section can be the entire array, or a subset of the item indicated by a start and an end index (the item at the end index is not included in the slice. Slices provide a dynamic window to the underlying array. Slices are indexable and have length given by the `len()` function. The slice-index of a given item can be less than the index of the same element in the underlying array. Unlike an array, the length of the slice can change during the execution of the code. The built it capacity (`cap()`) function gives the max length the slice can become. It is the length of the slice + the length of the array beyond the slice. If `s` is a slice, **cap** is the size of the array from `s[0]` to the end of the array. A slices length can never exceed its capacity. Multiple slices can share data if they represent pieces of the same array, but multiple arrays can never share data. Distinct Arrays always represent distinct storage. Because slices are merely *references*, they don't use up additional memory and are more efficient to use than arrays in Go. When you create a slice it initalizes an Array, and a structure that records the length of the slice, the capacity of the slice, and a reference to the underlying array (pointer to the head). If you have a function that must operate on an array, you always want to declare the formal parameter to be a slice. When you call the function, slice the array to create a slice reference and pass that. Since slices are a refernce type you can use the keyword function `make()` to define a new slice. The `make()` function takes two parameters, the type to be created, and the number of items in the slice, with an optional third argument for the **capacity**. Example being `var slice1 []type = make([]type, len)` or shorthand as `slice1 := make([]T, len)` where **T** is the type of variable used inside, and **len** is the initial length of the slice. 
-
+A slice is a reference to a contiguous segment of an Array, so a slice is a reference type (like a list type in Python). This section can be the entire array, or a subset of the item indicated by a start and an end index (the item at the end index is not included in the slice. Slices provide a dynamic window to the underlying array. Slices are indexable and have length given by the `len()` function. The slice-index of a given item can be less than the index of the same element in the underlying array. Unlike an array, the length of the slice can change during the execution of the code. The built it capacity (`cap()`) function gives the max length the slice can become. It is the length of the slice + the length of the array beyond the slice. If `s` is a slice, **cap** is the size of the array from `s[0]` to the end of the array. A slices length can never exceed its capacity. Multiple slices can share data if they represent pieces of the same array, but multiple arrays can never share data. Distinct Arrays always represent distinct storage. Because slices are merely *references*, they don't use up additional memory and are more efficient to use than arrays in Go. When you create a slice it initalizes an Array, and a structure that records the length of the slice, the capacity of the slice, and a reference to the underlying array (pointer to the head). If you have a function that must operate on an array, you always want to declare the formal parameter to be a slice. When you call the function, slice the array to create a slice reference and pass that. Since slices are a refernce type you can use the keyword function `make()` to define a new slice. The `make()` function takes two parameters, the type to be created, and the number of items in the slice, with an optional third argument for the **capacity**. Example being `var slice1 []type = make([]type, len)` or shorthand as `slice1 := make([]T, len)` where **T** is the type of variable used inside, and **len** is the initial length of the slice.
 
 The format of declarations is `var identifier []type`.
 
@@ -489,8 +495,6 @@ A Slice initializes an Array, with three elements inside of it:
  | Can't be resized          | Can Grow and Shrink                                        |
  | Rarely used directly      | Used 99% of the time for lists of elements                 |
  | Building blocks of Slices | Dynamic window of the underlying array                     |
-
-
 
 ### Maps
 
@@ -588,7 +592,7 @@ Either way works, difference seems to be semantic, but speficity IS important as
 
 Data structures that contain a number of items and are called **collections** in Go, some examples being Arrays (slices) and Maps. The `Array` type is indicated by the `[]` (square brackets), **numbered** and of **fixed length** sequence of data items (elements) of the same type. This type can contain primitve types like int's or strings, or self defined types. The length must be a constant expression that must evaluate to a non-negative integer value. The number of items, also called then **length** is fixed and must bew declared when initializing the array at compile time. Arrays are mutable, which means they can be changed. Only valid indexes can be used, when using an index greater than or equal than `len(arr1)`, you will get the error message at compile of `index out of bounds`, and when trying to run will give you ther error message of `index out of range`. A run time error means the program will crash and give you a certain message. In Go terminolofy this is called a **panic**. Because of the index, the way to loop over an array is to use the [**for-construct**](#iterative-loops)
 
-The format of the declaration is `var identifier [len]type` 
+The format of the declaration is `var identifier [len]type`
 
 E.g.
 
@@ -636,6 +640,9 @@ Two ways to prevent this are:
 - Passing a pointer to the array
 - Using a slice of the array
 
+#### Multi-Dimensional Arrays
+
+Arrays are always 1-dimensional, buit may be composed to fomr multi-dimenisional arrays like `[2][4]int`. The inner arrays always have the same length.
 
 ### Structs (*Value Type*)
 
@@ -729,6 +736,7 @@ The function `new(T)` allocates zeroed storage for a new item of **type T** and 
 #### make(T)
 
 The function `make(T)` returns an initialized value of **type T**. It applies only to the 3 built-in reference types: slices, maps, and channels.
+
 In other words, new allocates and make initializes.
 
 #### Concurrency is NOT Parallelism
