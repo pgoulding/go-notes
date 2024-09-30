@@ -6,7 +6,7 @@ Go Source code is stored in *.go* files. Their filenames consist of lower-case l
 
 ## Identifiers
 
-An *identifier* is a name assigned by the user to a program element like a *variable*, *function*, *template*, *struct*, etc... Nearly all things in Go have a name or *identifier*. Valid identifiers begin with a letter or underscore and are followed by 0 or more letters or unicode digits, can not start with a digit, have an [operator](#operators), or be a keyword. Go has 25 [keywords](https://go.dev/ref/spec#Keywords) and 36 [predeclared identifiers](https://go.dev/ref/spec#Predeclared_identifiers) that can't be used for names. You can also use an underscore (`_`) or as it's called in go a *blank identifier*, however its value is discarded and cannot be used in the code that follows, on use case for that being [loops](#loops).
+An *identifier* is a name assigned by the user to a program element like a *variable*, *function*, *template*, *struct*, etc... Nearly all things in Go have a name or *identifier*. Valid identifiers begin with a letter or underscore and are followed by 0 or more letters or unicode digits, can not start with a digit, have an operator, or be a keyword. Go has 25 [keywords](https://go.dev/ref/spec#Keywords) and 36 [predeclared identifiers](https://go.dev/ref/spec#Predeclared_identifiers) that can't be used for names. You can also use an underscore (`_`) or as it's called in go a *blank identifier*, however its value is discarded and cannot be used in the code that follows, on use case for that being loops.
 
 | Valid Identifiers | Invalid Identifiers |
 | ----------------- | ------------------- |
@@ -421,28 +421,6 @@ A quick and dirty way to trace the execution of a program is using the defer key
 - Closures
 - Functions as Return Values
 
-### Optimizing Programs
-
-Sometimes it's intersting to know how long a ceratin computation took to run, especially for testing or benchmarking solutions. The simple way to do this is to record the *start-time* before the calculation, and the *end-time* after it runs. The way to do this in Go can be by using the `Now` function from the `time` package in Go.
-
-```go
-package main
-import "fmt"
-import "time"
-
-func Calculation(){
-    for i := 0; i<10000; i++{
-        //do something
-    }
-}
-func main(){
-    start := time.Now()
-    Calculation()
-    end := time.Now()
-    delta := end.Sub(start)
-    fmt.Printf("Calculation took this amount of time: %s\n", delta)
-}
-```
 
 ## Testing in Go
 
@@ -496,13 +474,23 @@ A Slice initializes an Array, with three elements inside of it:
  | Rarely used directly      | Used 99% of the time for lists of elements                 |
  | Building blocks of Slices | Dynamic window of the underlying array                     |
 
-### Maps
+One thing to be cautious of, is that a slice points to an an underlying array, this could potentially be much bigger than the slice. As long as the slice is referred to the full array will be kept in memory until it is no longer refernced. This can cause the program to hold all the data in memory when only a small piece is needed.
 
-A **map** holds a set of key/value pairs and provides constant-time (or O(1) in Big-O notation) operations to store,retrieve, or test for an item in the set. The key may be of any type whose values can be compared with *==*, strings being the most common example; the value may be of any type at all.
+### Maps (**reference type**)
 
-All keys and values must be same same type. Keys and their values can be different types, but all the Keys must be the same type as each other, same for the values.
+Maps are a special kind of data structure: an **unordered** collection of pairs of items, where one element of the pair is the key, and the other element is the data or value. A **map** holds this set of key/value pairs and provides constant-time (or O(1) in Big-O notation) operations to store, retrieve, or test for an item in the set. The key may be of any type whose values can be compared with the *==* operand, strings being the most common example; the value may be of any type at all. In general a map is declared as `var map1 map[keytype]valuetype` for example: `var map1 map[string]int`. All keys and values must be same same type. Keys and their values can be different types, but all the Keys must be the same type as each other and same for the values.
 
-Can access values by square brackets
+- The length of the map doesnt have to be known at the declaration, which means a map can grow dynamically.
+- The value of an uninitialized map is `nil`.
+- The key type can be any type for which ``==` or `!=` are defined, like string, int or float.
+- Arrays, structs and pointers and interface types can be used as key type.
+- Slices can not be used as a key, because equality is not defined for them.
+- The value field can be any type.
+- Maps are not **key** or **value** ordered
+- Maps are cheap to pass to a function becuase only a *refernece* is passed, no matter how much data they hold. 
+- Looking up a value in a map by key is faster than a linear search, but still much slower than direct indexing an Array or Slice.
+- Maps are **reference type**, so can be intialized using the `make()` function. 
+- Can access values by using square brackets
 
 ```go
     colors := map[string]string{
@@ -515,7 +503,38 @@ Can access values by square brackets
     // should print #00ff00
 ```
 
-Why would you use a Map over a struct?
+In Go, when you try and access a map with a key that doesn't exist, instead of throwing and error, the map returns a **zero-value** for the type of value stored in the map. For example: integers would return a `0`, strings would return a `""` and pointers would retunr `nil`. Now because we know this, testing for the existence of a key can be a little different. In this case you would want to make use of the `comma, ok` idiom, where you return two values: the underlying value and a boolean value that reports whether the assertion succeeded.
+
+```go
+var (
+    people = map[string]int{
+    "bob":   41,
+    "gary":  56,
+    "aiden": 24,
+    }
+)
+
+func main() {
+    p1 := "bob"
+    p2 := "harry"
+    findAge(p1)
+    findAge(p2)
+}
+
+func findAge(person string) {
+    if pAge, ok := people[person]; ok {
+        fmt.Printf("%s's age is %d\n", person, pAge)
+        return
+    }
+    fmt.Printf("%s was not found", person)
+    return
+}
+// Output:
+// bob's age is 41
+// harry was not found
+```
+
+Deleting an element with a key can be done with `delete(map1, key1)`, when key1 doesn't exist the program does not produce an error.
 
 #### Differences between Maps and Structs
 
@@ -526,6 +545,18 @@ Why would you use a Map over a struct?
 | Keys are indexed - we can iterate over them         | Keys don't support indexing                                   |
 | Use to reperesnt a collection of related properties | Use to represent a "thing" with a lot of different properties |
 | Don't need to know all the keys at compile time     | You need to know all the different fields at compile time     |
+
+Now why would you want to use a **Map** over a **Struct**? In general you would use a Map when you need dynamic keys, or flexible data structures with variable fields. They offer flexibility at the cost of performance and memory fields. While you would use a Struct when the data is well-known and fixed. Structs provide better type safety, performance and are more memory efficient. They are the preferred choice when the data structure is known in advance.
+
+| Use Case                       | Prefer Map                  | Prefer Struct                                        |
+| ------------------------------ | --------------------------- | ---------------------------------------------------- |
+| Keys are Dynamic               | :white_check_mark:          | :x:                                                  |
+| Data Structure is well defined | :x:                         | :white_check_mark:                                   |
+| Type Safety and Performance    | :x:                         | :white_check_mark:                                   |
+| Sparse or sporadic fields      | :white_check_mark:          |                                                      |
+| Memory usage and efficiency    | :x:                         | :white_check_mark:                                   |
+| Fast Access to fields          | :x: (slower due to hashing) | :white_check_mark: (direct memory access)            |
+| Documentation and reliability  | :x: (less explicit)         | :white_check_mark: (more explicit, self documenting) |
 
 ## Pointers
 
@@ -683,13 +714,26 @@ Comparing concrete and interface types in Go:
 | **Example:**           | `type MyStruct struct { field1 int }`                                                               | `type MyInterface interface { Method1() }`                                                                                                              |
 | **Common Use Cases:**  | Data models, structs, specific algorithms, and operations.                                          | Polymorphism, dependency injection, and abstraction over different types.                                                                               |
 
+## Algorithms
+
+### Bubble Sort
+
+Bubble Sort is a simple sorting Algorith that repoeatedly steps through the input list, element by element, comparing the **current** element with the one after it, swapping the values if needed. These passes through the list (slice/array) are repeated until no swaps have been performed during a pass, meaning the list has been fully sorted. The algorithm which is a **comparison sort**, is named for the way the larger elements "bubble" up to the top of the list.
+
+Worst-case performance : O(n2)
+Best-case performance: O(n)
+Average performance: O(n2)
+Worst-case space complexity: O(n)
+
+## Appendix
+
 ### Go Channels & Routines
 
 Go rountines are initialized by using the `go` keyword before a function call.
 
 By default Go runs on only one CPU core.
 
-## Logging to the terminal
+### Logging to the terminal
 
 Go, like C and other langauges comes standard with a variety of tools to print to the terminal, especially useful for command lines tools and debugging. The most common being `fmt.Printf()`, which produces a formatted output from a list of expressions. It's firtst argument is format string that specifies how other arguments should be formatted. The format of each argument is determined by a consversion character and a letter following a perct sign.
 
@@ -725,6 +769,43 @@ For compound objects, the elements are printed using these rules, recursively, l
 | maps:             | map[key1:value1 key2:value2 ...] |
 | pointer to above: | &{}, &[], &map[]                 |
 
+### `append` cheat sheet
+
+| Operation                                    | Code                                                   |
+| -------------------------------------------- | ------------------------------------------------------ |
+| Append a slice b to an existing slice a:     | `a = append(a, b...)`                                  |
+| Delete item at index i:                      | `a = append(a[:i], a[i+1:]...)`                        |
+| Cut from index i till j out of slice a:      | `a = append(a[:i], a[j:]...)`                          |
+| Extend slice a with a new slice of length j: | `a = append(a, make([]T, j)...)`                       |
+| Insert item x at index i:                    | `a = append(a[:i], append([]T{x}, a[i:]...)...)`       |
+| Insert a new slice of length j at index i:   | `a = append(a[:i], append(make([]T, j), a[i:]...)...)` |
+| Insert an existing slice b at index i:       | `a = append(a[:i], append(b, a[i:]...)...)`            |
+| Pop highest element from stack:              | `x, a = a[len(a)-1], a[:len(a)-1]`                     |
+| Push an element x on a stack:                | `a = append(a, x)`                                     |
+
+### Optimizing Programs
+
+Sometimes it's intersting to know how long a ceratin computation took to run, especially for testing or benchmarking solutions. The simple way to do this is to record the *start-time* before the calculation, and the *end-time* after it runs. The way to do this in Go can be by using the `Now` function from the `time` package in Go.
+
+```go
+package main
+import "fmt"
+import "time"
+
+func Calculation(){
+    for i := 0; i<10000; i++{
+        //do something
+    }
+}
+func main(){
+    start := time.Now()
+    Calculation()
+    end := time.Now()
+    delta := end.Sub(start)
+    fmt.Printf("Calculation took this amount of time: %s\n", delta)
+}
+```
+
 ### Difference between new() and make()
 
 This is often confusing at first sight: both allocate memory on the heap, but they do different things and apply to different types.
@@ -739,7 +820,7 @@ The function `make(T)` returns an initialized value of **type T**. It applies on
 
 In other words, new allocates and make initializes.
 
-#### Concurrency is NOT Parallelism
+### Concurrency is NOT Parallelism
 
 **Concurrency:** Dealing with a lot of things at once.
 **Parallelism:** Doing a lot of things at once.
