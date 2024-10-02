@@ -2,7 +2,23 @@
 
 This Repo is a place for my notes on Go(lang) and is based an accumulation of books, courses, projects, articles and threads.
 
-Go Source code is stored in *.go* files. Their filenames consist of lower-case letters like `main.go` if the name consists of multiple parts, they are seperated by underscores (`_`) like `tcp_transport.go`. Filenames cannot contain spaces or any other speical characters.
+## The Go Toolchain
+
+The `go` command is used as a *Uniform* (OS Independent) tool to fetch, build and install Go packages and applications. Everything from how to get a package, compile, link, and test it, is deduced by looking at the source code to find dependencies and determine build conditions. A single Environment variable `GOPATH`, tells the `go` command where to find, and install the Go packages on your system. This command has the same syntax as the Systems `PATH` environment variable, so a `GOPATH` is a list of absolute paths, seperated by **colons** *(:)* on Unix like machines and **semicolons** *(;)* on Windows. This command is a central tool in the Go Programming language that is design ed to streamline the process of working with GO  code across different operating systems. It abstracts away the complexities of managing dependencies, compiling source code, and installing binaries, making the development process more efficient and uniform acrosss different environments.
+
+The Go Root (`GOROOT`) directory is where the Go SDK and it's standard libraries are located. This is a predefined location on your system where Go is installed. The *workspace* on the other hand is defined by the `GOPATH` environment variabale, and is where your own Go projects and third party packages reside.
+
+A workspace contains Go source files and their associated package objects, and command executables. It has a prescribed structure of three subdirectories:
+
+- src contains a structure of subdirectories each containing Go source files (.go)
+- pkg contains installed and compiled package objects (.a)
+- bin contains executables (.out or .exe)
+
+Subdirectories of the **src** directory hold independent packages, and all source files (.go, .c, .h, and .s), in each subdirectory are elements of that subdirectory's package. Go Source code is stored in *.go* files. Their filenames consist of lower-case letters like `main.go` if the name consists of multiple parts, they are seperated by underscores (`_`) like `tcp_transport.go`. Filenames cannot contain spaces or any other special characters.
+
+When building a program that imports the package `widget`, the `go` command looks for **src/pkg/widget** inside the Go *root*, and then if the package source isn't there it searches for **src/widget** in each workspace in order.
+
+
 
 ## Identifiers
 
@@ -311,7 +327,7 @@ In go there is a keyword `goto` whcih has to be followed by a label name. `goto 
 
 ## Functions in Go
 
-Every program consists of several functions of the basic core functionality, the main prupose of which is to break a large problem into a smaller one, or the same task several times. When writing code you should always honor the [Don't Repeat Yourself 'DRY' principles][https://en.wikipedia.org/wiki/Don%27t_repeat_yourself], meaning the code which performs a certain task should only appear once in a program.
+Every program consists of several functions of the basic core functionality, the main prupose of which is to break a large problem into a smaller one, or the same task several times. When writing code you should always honor the [Don't Repeat Yourself 'DRY' principles](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself), meaning the code which performs a certain task should only appear once in a program.
 
 A function ends when it has executed its last statement before the ending "`}`" or when it executes the `return` statement.
 
@@ -421,7 +437,6 @@ A quick and dirty way to trace the execution of a program is using the defer key
 - Closures
 - Functions as Return Values
 
-
 ## Testing in Go
 
 Some functions in Go are defined so that they return *two* results, on is the falue, and the other is the status of the execution. For example the function would return both the value, and `true` in case of a succesful execution, or return the value (probably `nil`) and `false` in case of an unsuccessful execution. Other functions return an error-variable, where in case of a successful execution it will likely return `nil`, otherwise it contains the error informatiion. Commonly this is called the **comma, ok** pattern.
@@ -487,9 +502,9 @@ Maps are a special kind of data structure: an **unordered** collection of pairs 
 - Slices can not be used as a key, because equality is not defined for them.
 - The value field can be any type.
 - Maps are not **key** or **value** ordered
-- Maps are cheap to pass to a function becuase only a *refernece* is passed, no matter how much data they hold. 
+- Maps are cheap to pass to a function becuase only a *refernece* is passed, no matter how much data they hold.
 - Looking up a value in a map by key is faster than a linear search, but still much slower than direct indexing an Array or Slice.
-- Maps are **reference type**, so can be intialized using the `make()` function. 
+- Maps are **reference type**, so can be intialized using the `make()` function.
 - Can access values by using square brackets
 
 ```go
