@@ -14,11 +14,9 @@ A workspace contains Go source files and their associated package objects, and c
 - pkg contains installed and compiled package objects (.a)
 - bin contains executables (.out or .exe)
 
-Subdirectories of the **src** directory hold independent packages, and all source files (.go, .c, .h, and .s), in each subdirectory are elements of that subdirectory's package. Go Source code is stored in *.go* files. Their filenames consist of lower-case letters like `main.go` if the name consists of multiple parts, they are seperated by underscores (`_`) like `tcp_transport.go`. Filenames cannot contain spaces or any other special characters.
+Subdirectories of the **src** directory hold independent packages, and all source files (.go, .c, .h, and .s), in each subdirectory are elements of that subdirectory's package. Go Source code is stored in *.go* files. The extension for Go source code files is, `.go`. C files end in `.c` and assembly files in `.s`, where source code-files are organized in packages. Compressed files for packages containing executable code have the extension `.a` (AR archive). Linker (object) files can have the extension `.o`. An executable program has the extension `.exe` on Windows by default. Their filenames consist of lower-case letters like `main.go` if the name consists of multiple parts, they are seperated by underscores (`_`) like `tcp_transport.go`. Filenames cannot contain spaces or any other special characters.
 
 When building a program that imports the package `widget`, the `go` command looks for **src/pkg/widget** inside the Go *root*, and then if the package source isn't there it searches for **src/widget** in each workspace in order.
-
-
 
 ## Identifiers
 
@@ -502,7 +500,7 @@ Maps are a special kind of data structure: an **unordered** collection of pairs 
 - Slices can not be used as a key, because equality is not defined for them.
 - The value field can be any type.
 - Maps are not **key** or **value** ordered
-- Maps are cheap to pass to a function becuase only a *refernece* is passed, no matter how much data they hold.
+- Maps are cheap to pass to a function becuase only a *reference* is passed, no matter how much data they hold.
 - Looking up a value in a map by key is faster than a linear search, but still much slower than direct indexing an Array or Slice.
 - Maps are **reference type**, so can be intialized using the `make()` function.
 - Can access values by using square brackets
@@ -692,7 +690,24 @@ Arrays are always 1-dimensional, buit may be composed to fomr multi-dimenisional
 
 ### Structs (*Value Type*)
 
-Similar to a JavaScript Object or a Python Dictionary.
+Go supports user-defined or custom types in the form of alias types or structs. Structs are considered both **Value types** and **Composite Types** depending on the context. Structs are considered a composite type, because they groups together multiple fields, potentially of different types into a single entity. These composite types combine multiple properties of real world entities into a single type. The component pieces of data that constitute the struct type are called **fields**, a field has a type and a name.
+
+The general format for defining a struct goes:
+
+```go
+type identifier struct {
+    field1 type1
+    field2 type2
+}
+```
+
+Memory allocation adn initialization are fundamental concepts that can be approached in two distinct ways, each serving diffenret needs in a program.
+
+1. **Using `new(T)` for allocation...** The expression `t:=new(T)` allocates memory for a struct of type `T`. THis operation returns a pointer to the newly allocated memory. At this point, the structs fields are not explicitly initialized by the programmer; instead, Go automatically initalizes them to the Zero values (*0* for Integers, *false* for Booleans, *""* for strings, etc..). This method is useful when you need a pointer to the struct, whcih is common in Go to avoid copying large structs and to modify the struct directly across different scopes or *goroutines*.
+2. **Direct Variable Declaration...** Declaring a variable of a struct type with `var t T` also allocates memory for the struct and initializes its field to zero values. However in this case `t` is not a poointer but an instance of type `T` itself. This approach is straightforward and is used when you don't need to pass the struct around by reference, or wehen the struct is small enough that the overhead of copying it is negligible. It's also slightly more idomatic when the struct is going to be used directly within the same scope and won't benefit from being a pointer.
+
+A struct can be defined in terms of itself. This is particularly useful when the struct itself. This is particularly useful when the struct variable is an element of a **linked list** or **binary tree**, commonly called a **node**. In that case the node contains links (the addresses) to the neighboring nodes. 
+
 
 ### Interfaces
 
@@ -740,6 +755,8 @@ Best-case performance: O(n)
 Average performance: O(n2)
 Worst-case space complexity: O(n)
 
+[Example](./algos/bubble_sort.go)
+
 ## Appendix
 
 ### Common Go Packages
@@ -777,6 +794,18 @@ Worst-case space complexity: O(n)
 | `html`                          | Parser for HTML5                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `runtime`                       | Contains operations for interfacing with the Go-runtime, such as garbage collection and goroutines                                                                                                                                                                                                                                                                                                                                                               |
 | `reflect`                       | Implements runtime introspection, enabling a Go prograsm to maniuplate variables of arbitary types. Useful for scenarios where the type of vcariable is not know at compile time, or when you need to work with types dynamically, such as when dealing with data serialization/deserialization or implementing generic functions.                                                                                                                               |
+
+### Garbage Collection
+
+Go takes repsonsibility for arranging the storage of values, what this means for the developer is that for the mopst part you don't need to care where, how or why those values are stored. However, these values often need to be stored in a computers *physical memory* and that is a finite resource. Memory must be managed carefully and recycled in order to avoid running out of it while executing a Go program. It's the job of your implementation of such to allocate and recycle memory when needed. Another term for automatically recycling memory is [**Garbage Collection**](https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)). A *garbage collector* is a system that recycles memory on behalf of the application by identifying which parts of memory are no longer needed. The go standard tool chain provides a runtime library that ships with every application, and this runtime library includes a garbage collector.
+
+
+### Object-Oriented Terminology vs. Go’s Approach
+
+In traditional object-oriented programming (OOP) languages, instances of classes are often referred to as objects. These objects encapsulate both data (fields) and behaviors (methods).
+Go, however, does not have classes in the traditional sense. Instead, it uses structs for data encapsulation and interfaces for defining behaviors. Thus, while one might refer to instances of structs as objects in an OOP context, Go simply treats these as values of a particular type.
+This distinction emphasizes Go’s approach to simplicity and composition over inheritance and the typical class-based modeling found in OOP.
+Understanding these concepts is crucial for effective Go programming, especially when designing and implementing systems that require efficient memory management and clear structuring of data.
 
 ### Documenting Packages
 
